@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright (c) 2015, 2019, Gluon and/or its affiliates.
+  All rights reserved. Use is subject to license terms.
+
+  This file is available and licensed under the following license:
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+  - Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in
+    the documentation and/or other materials provided with the distribution.
+  - Neither the name of Oracle Corporation nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<VBox prefHeight="600.0" prefWidth="1165.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.avalon.bom.BillOfMaterialsController">
+  <children>
+    <MenuBar VBox.vgrow="NEVER">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem mnemonicParsing="false" text="New" />
+            <MenuItem mnemonicParsing="false" text="Open…" />
+            <Menu mnemonicParsing="false" text="Open Recent" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Close" />
+            <MenuItem mnemonicParsing="false" text="Save" />
+            <MenuItem mnemonicParsing="false" text="Save As…" />
+            <MenuItem mnemonicParsing="false" text="Revert" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Preferences…" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Quit" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Edit">
+          <items>
+            <MenuItem mnemonicParsing="false" text="Undo" />
+            <MenuItem mnemonicParsing="false" text="Redo" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Cut" />
+            <MenuItem mnemonicParsing="false" text="Copy" />
+            <MenuItem mnemonicParsing="false" text="Paste" />
+            <MenuItem mnemonicParsing="false" text="Delete" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Select All" />
+            <MenuItem mnemonicParsing="false" text="Unselect All" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+          <items>
+            <MenuItem mnemonicParsing="false" text="About MyHelloApp" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
+    <SplitPane dividerPositions="0.21237113402061855, 0.8257731958762887" focusTraversable="true" prefHeight="553.0" prefWidth="1118.0" VBox.vgrow="ALWAYS">
+      <items>
+        <AnchorPane prefHeight="551.0" prefWidth="254.0">
+          <children>
+            <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" minWidth="60.0" prefWidth="-1.0" style="&#10;" text="Master" textAlignment="CENTER" wrapText="false">
+              <font>
+                <Font size="18.0" fx:id="x1" />
+              </font>
+              <textFill>
+                <Color red="0.624" green="0.624" blue="0.624" fx:id="x2" />
+              </textFill>
+            </Label>
+                  <TextField fx:id="projectNameTF" layoutX="89.0" layoutY="41.0" />
+                  <Label layoutX="14.0" layoutY="45.0" text="Projet Name:" />
+                  <Label layoutX="14.0" layoutY="76.0" text="Project ID:" />
+                  <TextField fx:id="projectIDTF" layoutX="89.0" layoutY="72.0" />
+                  <Label layoutX="14.0" layoutY="106.0" text="Description:" />
+                  <TextArea fx:id="descriptionTF" layoutX="89.0" layoutY="107.0" prefHeight="68.0" prefWidth="150.0" />
+                  <Label layoutX="12.0" layoutY="189.0" text="Elevation:" />
+                  <TextArea fx:id="elevationTF" layoutX="88.0" layoutY="198.0" prefHeight="82.0" prefWidth="150.0" />
+          </children>
+        </AnchorPane>
+        <ScrollPane prefHeight="551.0" prefWidth="452.0">
+          <content>
+            <AnchorPane id="Content" minHeight="-1.0" minWidth="-1.0" prefHeight="546.0" prefWidth="724.0">
+              <children>
+                <Label alignment="CENTER" font="$x1" layoutX="14.0" layoutY="14.0" style="&#10;" text="Hardware" textAlignment="CENTER" textFill="$x2" wrapText="false" />
+                        <AnchorPane layoutX="17.0" layoutY="123.0" prefHeight="394.0" prefWidth="396.0">
+                           <children>
+                              <ComboBox id="hardwareGroupNumberCB" fx:id="hardwareGroupCmbB" layoutX="115.0" layoutY="14.0" prefWidth="150.0" />
+                              <Label layoutX="14.0" layoutY="18.0" text="Hardare Group #:" />
+                              <HBox layoutX="5.0" layoutY="54.0" prefHeight="326.0" prefWidth="677.0">
+                                 <children>
+                                    <VBox prefHeight="326.0" prefWidth="300.0">
+                                       <children>
+                                          <HBox prefHeight="36.0" prefWidth="195.0" spacing="2.0">
+                                             <children>
+                                                <Label text="Head:" />
+                                                <TextField fx:id="headTF" prefHeight="26.0" prefWidth="84.0" />
+                                                <Button fx:id="setHeadDefaultsBtn" mnemonicParsing="false" onAction="#setHeadDefaults" text="Set Defaults" />
+                                             </children>
+                                          </HBox>
+                                          <GridPane prefHeight="260.0" prefWidth="177.0">
+                                             <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                             </columnConstraints>
+                                             <rowConstraints>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                             </rowConstraints>
+                                             <children>
+                                                <Label text="Concealed Overhead Stop:" />
+                                                <Label text="Pivot:" GridPane.rowIndex="1" />
+                                                <TextField fx:id="concealedOverheadTF" GridPane.columnIndex="1" />
+                                                <TextField fx:id="pivotTF" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <Label text="Concealed Closer:" GridPane.rowIndex="2" />
+                                                <Label text="Door Position Switch:" GridPane.rowIndex="3" />
+                                                <Label text="Coordinator" GridPane.rowIndex="4" />
+                                                <TextField fx:id="concealedCloserTF" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <TextField fx:id="doorPositionSwitchTF" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                <TextField fx:id="coordinatorTF" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                <Label text="Flush Bolt:" GridPane.rowIndex="5" />
+                                                <Label text="Concealed Vertical Rod:" GridPane.rowIndex="6" />
+                                                <Label text="Roller Latch:" GridPane.rowIndex="7" />
+                                                <Label text="Surface Closer Reinforcement:" GridPane.rowIndex="8" />
+                                                <TextField fx:id="flushBoltTF" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                                <TextField fx:id="concealedVerticalTF" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                                <TextField fx:id="rollerLatchTF" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                                                <TextField fx:id="surfaceCloserTF" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                                             </children>
+                                          </GridPane>
+                                       </children>
+                                    </VBox>
+                                    <VBox prefHeight="326.0" prefWidth="300.0">
+                                       <children>
+                                          <HBox prefHeight="36.0" prefWidth="195.0" spacing="2.0">
+                                             <children>
+                                                <Label text="Strike Jamb" />
+                                                <TextField fx:id="strikeJambTF" prefHeight="26.0" prefWidth="84.0" />
+                                                <Button fx:id="setStrikeDefaultsBtn" mnemonicParsing="false" onAction="#setStrikeJambDefaults" text="Set Defaults" />
+                                             </children>
+                                          </HBox>
+                                          <GridPane prefHeight="260.0" prefWidth="177.0">
+                                             <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                             </columnConstraints>
+                                             <rowConstraints>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                             </rowConstraints>
+                                             <children>
+                                                <Label text="STD Ansi Strike Plate:" />
+                                                <Label text="Dead Bolt:" GridPane.rowIndex="1" />
+                                                <TextField fx:id="strikePlateTF" GridPane.columnIndex="1" />
+                                                <TextField fx:id="deadBoltTF" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <Label text="No Strike:" GridPane.rowIndex="2" />
+                                                <Label text="Electric Strike:" GridPane.rowIndex="4" />
+                                                <TextField fx:id="noStrikeTF" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <TextField fx:id="strikeRollerLatchTF" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                <TextField fx:id="electricStrikeTF" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                <Label text="Door Position Switch:" GridPane.rowIndex="5" />
+                                                <Label text="Emergency Stop:" GridPane.rowIndex="6" />
+                                                <Label text="Double Lip Strike:" GridPane.rowIndex="7" />
+                                                <TextField fx:id="strikeDoorPositionSwitchTF" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                                <TextField fx:id="emergencyStopTF" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                                <TextField fx:id="doubleLipStrikeTF" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                                                <Label text="Roller Latch:" GridPane.rowIndex="3" />
+                                             </children>
+                                          </GridPane>
+                                       </children>
+                                    </VBox>
+                                    <VBox prefHeight="326.0" prefWidth="300.0">
+                                       <children>
+                                          <HBox prefHeight="36.0" prefWidth="195.0" spacing="2.0">
+                                             <children>
+                                                <Label text="Hinge Jamb:" />
+                                                <TextField fx:id="hingeJambTF" prefHeight="26.0" prefWidth="73.0" />
+                                                <Button fx:id="setHingeDefaultsBtn" mnemonicParsing="false" onAction="#setHingeJambDefaults" text="Set Defaults" />
+                                             </children>
+                                          </HBox>
+                                          <GridPane prefHeight="260.0" prefWidth="177.0">
+                                            <columnConstraints>
+                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                            </rowConstraints>
+                                             <children>
+                                                <Label text="Electronic Power Transfer:" GridPane.rowIndex="2" />
+                                                <Label text="Location Electrified:" GridPane.rowIndex="3" />
+                                                <TextField fx:id="electronicPowerTF" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <TextField fx:id="localElectrifiedTF" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                <Label text="Quantity:" GridPane.rowIndex="4" />
+                                                <Label text="Hinge Stack:" GridPane.rowIndex="5" />
+                                                <Label text="Butt Type:" GridPane.rowIndex="6" />
+                                                <TextField fx:id="quantityTF" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                <TextField fx:id="hingeStackTF" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                                <TextField fx:id="buttTypeTF" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                                <Label text="Hinge Type:" />
+                                                <ChoiceBox id="hingeTypeCB" fx:id="hingeTypeCB" prefWidth="150.0" GridPane.columnIndex="1">
+                                            	    <items>
+											    	    <FXCollections fx:factory="observableArrayList">
+											    	    	<String fx:value="Butt" />
+											    	    	<String fx:value="Continuous" />
+											    	    	<String fx:value="Offset Pivot" />
+											        	</FXCollections>
+												    </items>
+											    </ChoiceBox>
+                                             </children>
+                                          </GridPane>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </AnchorPane>
+              </children>
+            </AnchorPane>
+          </content>
+        </ScrollPane>
+        <AnchorPane>
+          <children>
+            <Label alignment="CENTER" font="$x1" layoutX="14.0" layoutY="14.0" style="&#10;" text="Elevation" textAlignment="CENTER" textFill="$x2" wrapText="false" />
+                  <Label layoutX="14.0" layoutY="52.0" text="System Type:" />
+                  <ChoiceBox id="systemTypeCB" fx:id="systemTypeCB" layoutX="97.0" layoutY="48.0" prefHeight="22.0" prefWidth="92.0">
+	                  <items>
+	                  	<FXCollections fx:factory="observableArrayList">
+							<String fx:value="Eagle" />
+							<String fx:value="Flush Glider" />
+							<String fx:value="Barn Door" />
+							<String fx:value="Universal" />
+						</FXCollections>
+					  </items>
+                  </ChoiceBox>
+            <Label layoutX="19.0" layoutY="85.0" text="Eagle Type:" />
+                  <ChoiceBox id="eagleTypeCB" fx:id="eagleTypeCB" layoutX="95.0" layoutY="81.0" prefHeight="26.0" prefWidth="104.0">
+                  	<items>
+						<FXCollections fx:factory="observableArrayList">
+							<String fx:value="Eagle Frame" />
+							<String fx:value="Eagle Borrowed Light" />
+						</FXCollections>
+					</items>
+                  </ChoiceBox>                  
+                  <Label layoutX="36.0" layoutY="131.0" text="Width:" />
+                  <Label layoutX="34.0" layoutY="160.0" text="Height:" />
+                  <TextField fx:id="widthTF" layoutX="88.0" layoutY="127.0" prefHeight="22.0" prefWidth="104.0" />
+                  <TextField fx:id="heightTF" layoutX="88.0" layoutY="156.0" prefWidth="104.0" />
+                  <Label layoutX="5.0" layoutY="193.0" text="Trim Profile Size:" />
+                  <ChoiceBox id="trimProfileSizeCB" fx:id="trimProfileSizeCB" layoutX="95.0" layoutY="189.0" prefHeight="22.0" prefWidth="104.0">
+                  	<items>
+						<FXCollections fx:factory="observableArrayList">
+							<String fx:value="T112" />
+							<String fx:value="T200" />
+							<String fx:value="T400" />
+							<String fx:value="T600" />
+							<String fx:value="T300" />
+							<String fx:value="T800" />
+						</FXCollections>
+					</items>
+                  </ChoiceBox>                  
+                  <Label layoutX="22.0" layoutY="226.0" text="Throat Size:" />
+                  <ChoiceBox id="throatSizeCB" fx:id="throatSizeCB" layoutX="94.0" layoutY="222.0" prefHeight="27.0" prefWidth="104.0">
+                  	<items>
+						<FXCollections fx:factory="observableArrayList">
+							<String fx:value="TS500" />
+							<String fx:value="TS334" />
+							<String fx:value="TS538" />
+						</FXCollections>
+					</items>
+                  </ChoiceBox>                  
+                  <Label alignment="CENTER" layoutX="35.0" layoutY="259.0" text="Color:" />
+                  <ChoiceBox fx:id="colorCB" layoutX="93.0" layoutY="255.0" prefHeight="26.0" prefWidth="104.0">
+                  	<items>
+						<FXCollections fx:factory="observableArrayList">
+							<String fx:value="Clear Anodized" />
+							<String fx:value="Black Anodized" />
+						</FXCollections>
+					</items>
+                  </ChoiceBox>                  
+                  <CheckBox id="selectChkBtn" fx:id="transomCxBx" layoutX="112.0" layoutY="299.0" mnemonicParsing="false" onAction="#selectTransom" text="Transom" />
+                  <CheckBox fx:id="leftSidelightCxBx" layoutX="8.0" layoutY="299.0" mnemonicParsing="false" onAction="#selectLeftSidelight" text="Left Sidelight" />
+                  <CheckBox fx:id="rightSidelightCxBx" layoutX="9.0" layoutY="325.0" mnemonicParsing="false" onAction="#selectRightSidelight" text="Right Sidelight" />
+                  <Label layoutX="7.0" layoutY="355.0" text="Frame Type:" />
+                  <ChoiceBox fx:id="frameTypeCB" layoutX="89.0" layoutY="350.0" onAction="#selectFrameType" prefHeight="26.0" prefWidth="104.0">
+                  	<items>
+						<FXCollections fx:factory="observableArrayList">
+							<String fx:value="Single Swing" />
+							<String fx:value="Double Egress" />
+							<String fx:value="Pair Frame" />
+							<String fx:value="Center Hung Pivot" />
+						</FXCollections>
+					</items>
+                  </ChoiceBox>                  
+                  <Label layoutX="6.0" layoutY="387.0" text="Single Swing:" textFill="#3042e1" />
+                  <Label layoutX="2.0" layoutY="419.0" text="Double Egress:" textFill="#2020df" />
+                  <Label layoutX="9.0" layoutY="453.0" text="Pair Frame:" textFill="#1f50d9" />
+                  <Label layoutX="1.0" layoutY="488.0" text="Center Hung Pivot:" textFill="#5531de" />
+                  <ChoiceBox fx:id="singleSwingCB" layoutX="89.0" layoutY="382.0" prefHeight="26.0" prefWidth="104.0">
+                  	<items>
+						<FXCollections fx:factory="observableArrayList">
+							<String fx:value="Left Hand" />
+							<String fx:value="Right Hand" />
+							<String fx:value="Left Hand Reverse" />
+							<String fx:value="Right Hand Reverse" />
+						</FXCollections>
+					</items>
+                  </ChoiceBox>                  
+                  <ChoiceBox fx:id="doubleEgressCB" layoutX="88.0" layoutY="414.0" prefHeight="26.0" prefWidth="104.0">
+                  	<items>
+						<FXCollections fx:factory="observableArrayList">
+							<String fx:value="Left Hand Active" />
+							<String fx:value="Right Hand Active" />
+							<String fx:value="Left Hand Reverse Active" />
+							<String fx:value="Right Hand Reverse Active" />
+						</FXCollections>
+					</items>
+                  </ChoiceBox>                  
+                  <ChoiceBox fx:id="pairFrameCB" layoutX="89.0" layoutY="449.0" prefHeight="26.0" prefWidth="104.0">
+                   	<items>
+						<FXCollections fx:factory="observableArrayList">
+							<String fx:value="Left Hand Active" />
+							<String fx:value="Right Hand Active" />
+							<String fx:value="Left Hand Reverse Active" />
+							<String fx:value="Right Hand Reverse Active" />
+						</FXCollections>
+					</items>
+                  </ChoiceBox>                  
+                  <ChoiceBox fx:id="centerHungPivotCB" layoutX="103.0" layoutY="483.0" prefHeight="26.0" prefWidth="88.0">
+                   	<items>
+						<FXCollections fx:factory="observableArrayList">
+							<String fx:value="Pair" />
+							<String fx:value="Single" />
+						</FXCollections>
+					</items>
+                  </ChoiceBox>
+                  <Button fx:id="colorAddBtn" alignment="CENTER" graphicTextGap="0.0" layoutX="10.0" layoutY="260.0" mnemonicParsing="false" onAction="#addColor" prefHeight="0.0" prefWidth="18.0" text="+" textAlignment="CENTER" textOverrun="CLIP">
+                     <font>
+                        <Font name="System Bold" size="8.0" />
+                     </font>
+                  </Button>                  
+          </children>
+        </AnchorPane>
+      </items>
+    </SplitPane>
+    <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
+      <children>
+        <Label maxHeight="1.7976931348623157E308" maxWidth="-1.0" text="Left status" HBox.hgrow="ALWAYS">
+          <font>
+            <Font size="11.0" fx:id="x3" />
+          </font>
+          <textFill>
+            <Color red="0.625" green="0.625" blue="0.625" fx:id="x4" />
+          </textFill>
+        </Label>
+        <Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
+        <Label font="$x3" maxWidth="-1.0" text="Right status" textFill="$x4" HBox.hgrow="NEVER" />
+      </children>
+      <padding>
+        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+      </padding>
+    </HBox>
+  </children>
+</VBox>

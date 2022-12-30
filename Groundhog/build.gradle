@@ -1,0 +1,151 @@
+plugins {
+	id 'application'
+	id 'java'
+	id 'eclipse'
+	id 'checkstyle'
+	id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+sourceCompatibility = 1.9
+targetCompatibility = 1.9
+version = '1.0'
+mainClassName = 'avalon.cmd.InsightScrapper'
+applicationDefaultJvmArgs = ['--module-path',"C:\\Program Files\\Java\\javafx-sdk-18.0.1\\lib",
+"--add-modules=javafx.controls",
+"--add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
+"--add-exports=javafx.base/com.sun.javafx.reflect=ALL-UNNAMED",
+"--add-exports=javafx.base/com.sun.javafx.beans=ALL-UNNAMED",
+"--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED",
+"--add-exports=javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED",
+"--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED",
+"--add-opens=javafx.graphics/javafx.scene=ALL-UNNAMED",
+"-Dlog4j.configurationFile=file:../resources/log4j2.properties"]
+sourceSets {
+	main {
+		java {
+			srcDir 'src'
+		}
+		resources {
+			srcDir 'rsc'
+		}
+	}
+}
+//sourceSets {
+//	main {
+//		java {
+//			srcDir 'src'
+//		 }
+//		resources {
+//			srcDir 'rsc'
+//		}
+//	}
+//	test {
+//		java {
+//			srcDir 'src'
+//		}
+//		resources {
+//			srcDir 'resources'
+//		}
+//	}
+//}
+//jar {
+//	manifest {
+//		attributes(
+//		"Implementation-Title": project.name,
+//		"Implementation-Version": '1.0.0',
+//		"Main-Class": mainClassName,
+//		"Class-Path": configurations.all.collect {it.getName()}.join(' ')}
+//		)	
+//	}
+//}
+shadowJar {
+	archiveClassifier.set('')
+	archiveVersion.set('')
+	from sourceSets.main.output, sourceSets.test.output
+	mergeServiceFiles {
+		setPath("META-INF/services")
+	}
+}
+task devShadowJar(type: ShadowJar) {
+    from 'src/log4j2.properties'
+}
+
+eclipse {
+	classpath {
+		defaultOutputDir = file('bin')
+	}
+}
+configurations {
+	implementation {
+		description = 'implementation classpath'
+	}
+	runtime {
+		extendsFrom implementation
+	}
+}
+repositories {
+	flatDir {
+		dirs 'lib'
+	}
+//	mavenLocal()
+	mavenCentral()
+	jcenter()
+
+}
+
+dependencies {
+	implementation 'org.springframework:spring-context:5.3.22'
+
+	implementation('org.seleniumhq.selenium:selenium-java:4.0.0-alpha-2')
+	implementation('commons-io:commons-io:2.6')
+	implementation('commons-logging:commons-logging:latest.integration') {transitive = false}
+	implementation('org.apache.pdfbox:pdfbox:2.0.8') {transitive = false}
+	implementation('org.apache.poi:poi:4.0.1')
+	implementation('org.apache.poi:poi-ooxml:4.0.1') 
+	implementation('com.opencsv:opencsv:4.1') {transitive = false}
+	implementation('org.apache.commons:commons-lang3:3.7')
+	implementation ('junit:junit:4.12')
+	implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
+	implementation group: 'com.atlassian.jira', name: 'jira-rest-java-client-core', version: '5.1.0'
+	implementation group: 'io.atlassian.fugue', name: 'fugue', version: '4.7.2'
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.1'
+ 	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.1'
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.11.1'
+	implementation group: 'com.google.guava', name: 'guava', version: '19.0'
+	//Need to create new project so can use guava 19
+	implementation "org.openjfx:javafx-base:11:win"
+    implementation "org.openjfx:javafx-graphics:11:win"
+    implementation "org.openjfx:javafx-controls:11:win"
+    implementation "org.openjfx:javafx-fxml:11:win"
+
+}
+
+checkstyle {
+	configFile = new File(rootDir, "checkstyle.xml")
+ }
+
+task copyDocs(type: Copy) {
+	from 'src/main/doc'
+	into 'build/target/doc'
+}
+
+task libs(type: Sync) {
+	from configurations.implementation
+	into "lib"
+}
+task installChrome(type: Copy) {
+    from 'chromedriver.exe'
+    into 'build/install/CMDWebsite-shadow/bin'
+}
+task installResource(type: Copy) {
+    from 'src/log4j2.properties'
+    into 'build/install/CMDWebsite-shadow/resources/'
+}
+task installConfig(type: Copy) {
+    from 'config/insight.properties'
+    into 'build/install/CMDWebsite-shadow/bin/config/'
+}
+tasks.installConfig.dependsOn tasks.installShadowDist
+tasks.installResource.dependsOn tasks.installConfig
+tasks.installChrome.dependsOn tasks.installResource

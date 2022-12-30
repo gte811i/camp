@@ -1,0 +1,8 @@
+/.gradle/
+/bin/
+/gradle/
+/resources/
+/build/
+/logs/
+/bin-default/
+/.settings/
