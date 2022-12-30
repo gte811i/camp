@@ -4,22 +4,18 @@ plugins {
 	id 'eclipse'
 	id 'checkstyle'
 	id 'com.github.johnrengelman.shadow' version '7.1.2'
+	id 'net.thauvin.erik.gradle.semver' version '1.0.4'
+}
+semver {
+    properties = "config/version.properties" // read and save properties in "my.version"
 }
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 sourceCompatibility = 1.9
 targetCompatibility = 1.9
 version = '1.0'
-mainClassName = 'avalon.cmd.InsightScrapper'
-applicationDefaultJvmArgs = ['--module-path',"C:\\Program Files\\Java\\javafx-sdk-18.0.1\\lib",
-"--add-modules=javafx.controls",
-"--add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
-"--add-exports=javafx.base/com.sun.javafx.reflect=ALL-UNNAMED",
-"--add-exports=javafx.base/com.sun.javafx.beans=ALL-UNNAMED",
-"--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED",
-"--add-exports=javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED",
-"--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED",
-"--add-opens=javafx.graphics/javafx.scene=ALL-UNNAMED",
+mainClassName = 'avalon.cmd.Groundhog'
+applicationDefaultJvmArgs = ['-Dwebdriver.chrome.driver=../resources/chromedriver.exe',
 "-Dlog4j.configurationFile=file:../resources/log4j2.properties"]
 sourceSets {
 	main {
@@ -49,19 +45,22 @@ sourceSets {
 //		}
 //	}
 //}
-//jar {
-//	manifest {
-//		attributes(
-//		"Implementation-Title": project.name,
-//		"Implementation-Version": '1.0.0',
-//		"Main-Class": mainClassName,
-//		"Class-Path": configurations.all.collect {it.getName()}.join(' ')}
-//		)	
-//	}
-//}
+jar {
+	manifest {
+		attributes(
+		"Implementation-Title": project.name,
+		"Implementation-Version": semver.semver,
+		"Main-Class": mainClassName,
+		"Class-Path": configurations.all.collect {it.getName()}.join(' ')
+		)
+	}
+}
 shadowJar {
+	doFirst {
+		println "ShadowJar build: $version"
+		archiveVersion.set(version)
+	}
 	archiveClassifier.set('')
-	archiveVersion.set('')
 	from sourceSets.main.output, sourceSets.test.output
 	mergeServiceFiles {
 		setPath("META-INF/services")
@@ -129,22 +128,33 @@ task copyDocs(type: Copy) {
 	from 'src/main/doc'
 	into 'build/target/doc'
 }
+task generateDeploymentConfigFile(type: Copy) {
+	from 'deploy/template.properties'
+	into 'config/insight.properties'
+	doFirst {
+	filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
+		'download_location' : 'C://Users//scarleton//Downloads//',
+		'xls_location' : 'C://Users//scarleton//Google Drive//Avalon//',
+		'user_name' : 'gte811i'
+	])
+	}
+}
 
 task libs(type: Sync) {
 	from configurations.implementation
 	into "lib"
 }
 task installChrome(type: Copy) {
-    from 'chromedriver.exe'
-    into 'build/install/CMDWebsite-shadow/bin'
+    from 'rsc/chromedriver.exe'
+    into 'build/install/Groundhog-shadow/resources/'
 }
 task installResource(type: Copy) {
     from 'src/log4j2.properties'
-    into 'build/install/CMDWebsite-shadow/resources/'
+    into 'build/install/Groundhog-shadow/resources/'
 }
 task installConfig(type: Copy) {
     from 'config/insight.properties'
-    into 'build/install/CMDWebsite-shadow/bin/config/'
+    into 'build/install/Groundhog-shadow/bin/config/'
 }
 tasks.installConfig.dependsOn tasks.installShadowDist
 tasks.installResource.dependsOn tasks.installConfig

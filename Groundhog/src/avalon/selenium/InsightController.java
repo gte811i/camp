@@ -50,6 +50,8 @@ public class InsightController extends CmdLogger{
 	private Button detailsBtn;
 	@Autowired
 	InsightSelenium is;
+	@Value("${version.semver}")
+	private String version;
 	@Value("${avalon.JobTrackerXLS.Location}")
 	private String jobTrackerFolder;
 	@Value("${avalon.Download.Location}")
@@ -165,6 +167,12 @@ public class InsightController extends CmdLogger{
 	 */
 	public static void setPrimaryStage(Stage primaryStage) {
 		InsightController.primaryStage = primaryStage;
+	}
+	/**
+	 * @return the version
+	 */
+	public String getVersion() {
+		return version;
 	}
 
 }

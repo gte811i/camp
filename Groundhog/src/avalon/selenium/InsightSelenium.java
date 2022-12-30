@@ -137,8 +137,8 @@ public class InsightSelenium {
 	private WebDriver driver; 
 
 	public void loginCMD() {
-		//		System.setProperty("webdriver.firefox.marionette","C:\\geckodriver.exe");
-		System.setProperty("webdriver.chrome.driver","chromedriver.exe");
+//		System.setProperty("webdriver.firefox.marionette","C:\\geckodriver.exe");
+//		System.setProperty("webdriver.chrome.driver","chromedriver.exe");
 		driver = new ChromeDriver();
 		//comment the above 2 lines and uncomment below 2 lines to use Chrome
 		//WebDriver driver = new ChromeDriver();
@@ -890,7 +890,8 @@ public class InsightSelenium {
 	}
 
 	public void quit() {
-		driver.quit();
+		if(driver != null)
+			driver.quit();
 	}
 	/**
 	 * @return the userName

@@ -21,6 +21,7 @@ import avalon.selenium.StateMachine;
  */
 @Configuration
 @PropertySource("file:config/insight.properties")
+@PropertySource("file:config/version.properties")
 @EnableAsync
 @ComponentScan("avalon.selenium")
 @EnableMBeanExport

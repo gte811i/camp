@@ -59,7 +59,7 @@ public class InsightScrapper extends Application{
 			}
 			primaryStage.setResizable(true);
 			primaryStage.show();
-			primaryStage.setTitle("Insight Scrapper");
+			primaryStage.setTitle("Groundhog" + " v"+controller.getVersion()); //set Version
 			primaryStage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, new EventHandler<WindowEvent>(){
 				@Override
 				public void handle(WindowEvent window)
