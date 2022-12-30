@@ -1,7 +1,7 @@
 /**
  * 
  */
-package CrmImport;
+package avalon.jira;
 
 import java.net.URI;
 import java.time.LocalDate;

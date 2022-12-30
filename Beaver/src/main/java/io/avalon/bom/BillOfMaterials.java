@@ -38,19 +38,19 @@ public class BillOfMaterials extends Application{
 			controller.setCtx(ctx);
 			Scene scene = new Scene(root, root.prefWidth(-1), root.prefHeight(-1));
 			primaryStage.setScene(scene); 
+			primaryStage.setResizable(true);
+			primaryStage.show();
+			primaryStage.setTitle("Beaver" + " v"+ controller.getVersion()); //set Version
+			primaryStage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, new EventHandler<WindowEvent>(){
+				@Override
+				public void handle(WindowEvent window)
+				{
+					primaryStage.close();
+				}
+			});
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		primaryStage.setResizable(true);
-		primaryStage.show();
-		primaryStage.setTitle("Bill of Materials");
-		primaryStage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, new EventHandler<WindowEvent>(){
-			@Override
-			public void handle(WindowEvent window)
-			{
-				primaryStage.close();
-			}
-		});
 
 	}
 }

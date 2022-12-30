@@ -1,7 +1,7 @@
 /**
  * 
  */
-package CrmImport;
+package avalon.jira;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -15,6 +15,8 @@ import java.util.function.Predicate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
@@ -26,6 +28,7 @@ import com.opencsv.bean.CsvBindByPosition;
  * @author scarleton3
  *
  */
+@Component
 public class JiraImportCrm {
 	public static Logger logger=LoggerFactory.getLogger(JiraImportCrm.class);
 	private HashSet<ContactCsv> contactAddList = new HashSet<>();
@@ -41,37 +44,13 @@ public class JiraImportCrm {
 	private Set<Issue> quotes; 
 	private HashMap<Long, List<BarCsv>> projectBarHash;
 	private HashMap<Long, List<BiddersCsv>>projectBiddersHash;
+	@Autowired
 	private CrmImport crm;
 	private AvalonJiraClient jiraClient;
 	private String companyKey;
 	private String contactKey;
 	private String projectKey;
 	private Long pn; 
-	public static void main(String[] args){
-		JiraImportCrm jira = new JiraImportCrm();
-		jira.initJira();
-		jira.collectCrm();
-		
-		//Get Project and connect with quotes
-		jira.getJiraProjects();
-		jira.collectProjects();
-		if(jira.addProjects())
-			jira.getJiraProjects();
-		//Get Companies & Contacts
-		jira.getJiraCompanies();
-		jira.getJiraContacts();
-		jira.collectBar();
-		jira.collectBidders();
-		if(jira.addCompanies())
-			jira.getJiraCompanies();
-		jira.collectContacts();
-		if(jira.addContacts())
-			jira.getJiraContacts();
-
-		jira.getJiraQuotes();
-		jira.collectQuotes();
-		jira.addQuotes();
-	}
 	Predicate<Issue> filterProjects = new Predicate<Issue>() {
 		@Override
 		public boolean test(Issue t) {
@@ -188,7 +167,6 @@ public class JiraImportCrm {
 	}
 
 	public void collectCrm() {
-		crm = new CrmImport();
 		crm.collectData();
 		logger.debug("AfterCollectData");
 		barList = crm.getBarList();

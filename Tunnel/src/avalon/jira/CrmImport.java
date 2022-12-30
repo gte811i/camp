@@ -1,7 +1,7 @@
 /**
  * 
  */
-package CrmImport;
+package avalon.jira;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,6 +30,8 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import com.opencsv.bean.BeanField;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
@@ -42,10 +44,13 @@ import com.opencsv.bean.CsvToBeanBuilder;
  * @author scarleton3
  *
  */
+@Component
 public class CrmImport {
 	public static Logger logger=LoggerFactory.getLogger(CrmImport.class);
 
-	private static String AVALON_DIR="C:\\Users\\scarleton\\Google Drive\\Avalon";
+	@Value("${avalon.download.location}")
+	private String AVALON_DIR;
+//	private static String AVALON_DIR="C:\\Users\\scarleton\\Google Drive\\Avalon";
 	HashSet<BarCsv> barList=new HashSet<>();
 	HashSet<BiddersCsv> biddersList=new HashSet<>();
 	HashSet<ContactCsv> contactAddsList = new HashSet<>();

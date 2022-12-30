@@ -153,9 +153,14 @@ task installResource(type: Copy) {
     into 'build/install/Groundhog-shadow/resources/'
 }
 task installConfig(type: Copy) {
-    from 'config/insight.properties'
+    from 'config/'
+    include "*.properties"
     into 'build/install/Groundhog-shadow/bin/config/'
 }
+task installGroundhog(type: Copy) {
+}
+
 tasks.installConfig.dependsOn tasks.installShadowDist
 tasks.installResource.dependsOn tasks.installConfig
 tasks.installChrome.dependsOn tasks.installResource
+tasks.installGroundhog.dependsOn tasks.installChrome

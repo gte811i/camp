@@ -1,7 +1,7 @@
 /**
  * 
  */
-package CrmImport;
+package avalon.jira;
 
 /**
  * @author scarleton3

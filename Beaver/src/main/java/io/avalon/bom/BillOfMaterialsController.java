@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -35,7 +36,6 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class BillOfMaterialsController{
-
 	static Stage primaryStage;
 	@FXML
 	private ResourceBundle resources;
@@ -190,6 +190,8 @@ public class BillOfMaterialsController{
     @FXML
     private TextField widthTF;
     AnnotationConfigApplicationContext ctx;
+	@Value("${version.semver}")
+	private String version;
 
     /**
 	 * 
@@ -388,6 +390,11 @@ public class BillOfMaterialsController{
 	public static void setPrimaryStage(Stage primaryStage) {
 		BillOfMaterialsController.primaryStage = primaryStage;
 	}
-
+	/**
+	 * @return the version
+	 */
+	public String getVersion() {
+		return version;
+	}
 }
 

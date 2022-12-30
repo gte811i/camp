@@ -12,7 +12,7 @@ sourceCompatibility = 1.10
 targetCompatibility = 1.10
 description = 'Beaver:BillOfMaterials'
 group = 'io.avalon.bom'
-mainClassName = 'io.avalon.bom.BillOfMaterials'
+mainClassName = 'io.avalon.bom.Beaver'
 version = '1.0'
 applicationDefaultJvmArgs = ['-Dlog4j.configurationFile=file:../resources/log4j2.properties']
 
@@ -124,8 +124,13 @@ task installResource(type: Copy) {
     into 'build/install/Beaver-shadow/resources/'
 }
 task installConfig(type: Copy) {
-    from 'config/application.properties'
+    from 'config/'
+    include "*.properties"    
     into 'build/install/Beaver-shadow/bin/config/'
 }
+task installBeaver(type: Copy) {
+}
+
 tasks.installConfig.dependsOn tasks.installShadowDist
 tasks.installResource.dependsOn tasks.installConfig
+tasks.installBeaver.dependsOn tasks.installResource

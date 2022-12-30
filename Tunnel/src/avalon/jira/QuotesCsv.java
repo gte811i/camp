@@ -1,7 +1,7 @@
 /**
  * 
  */
-package CrmImport;
+package avalon.jira;
 
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvBindByPosition;

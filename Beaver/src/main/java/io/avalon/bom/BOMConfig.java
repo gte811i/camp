@@ -22,6 +22,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @ComponentScan("io.avalon.bom")
 @EnableMBeanExport
 @PropertySource("classpath:application.properties")
+@PropertySource("file:config/version.properties")
 public class BOMConfig {
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {

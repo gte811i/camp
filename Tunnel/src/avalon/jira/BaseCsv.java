@@ -1,4 +1,4 @@
-package CrmImport;
+package avalon.jira;
 
 public interface BaseCsv {
 	enum CsvType{BIDDER, BAR}

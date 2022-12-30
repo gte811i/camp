@@ -559,7 +559,7 @@ public class CmdExcel extends CmdLogger{
 		FileFilter ageFilter = new AgeFileFilter(cutoff,false);
 		File[] files = dir.listFiles(ageFilter);
 		if(files == null) {
-			logger.debug("No Files to Copy From: " + downloadFolder +" To: " + trackerFolder);
+			logger.debug("No Files to Move From: " + downloadFolder +" To: " + trackerFolder);
 			return;
 		}
 		for(File f: files)
