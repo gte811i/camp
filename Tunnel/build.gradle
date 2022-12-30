@@ -1,0 +1,85 @@
+plugins {
+	id 'application'
+	id 'java'
+	id 'eclipse'
+	id 'checkstyle'
+	id 'com.github.johnrengelman.shadow' version '7.1.2'
+	id 'net.thauvin.erik.gradle.semver' version '1.0.4'
+}
+sourceCompatibility = 1.9
+targetCompatibility = 1.9
+version = '1.0'
+mainClassName = 'CrmImport.JiraImportCrm'
+applicationDefaultJvmArgs = ['-Dlog4j.configurationFile=file:../resources/log4j2.properties']
+jar {
+	manifest {
+		attributes 'Implementation-Title': 'Gradle Quickstart', 'Implementation-Version': version
+	}
+}
+sourceSets {
+	main {
+		java {
+			srcDir 'src'
+		 }
+		resources {
+			srcDir 'resources'
+		}
+	}
+	test {
+		java {
+			srcDir 'src'
+		}
+		resources {
+			srcDir 'resources'
+		}
+	}
+}
+configurations {
+	compile {
+		description = 'compile classpath'
+	}
+	runtime {
+		extendsFrom compile
+	}
+}
+repositories {
+	flatDir {
+		dirs 'lib'
+	}
+	mavenCentral()
+	jcenter()
+}
+
+dependencies {
+	implementation('commons-io:commons-io:2.6')
+	implementation('commons-logging:commons-logging:latest.integration') {transitive = false}
+	implementation('org.apache.pdfbox:pdfbox:2.0.8') {transitive = false}
+	implementation('org.apache.poi:poi:latest.integration')
+	implementation('org.apache.poi:poi-ooxml:latest.integration') 
+	implementation('com.opencsv:opencsv:4.1') {transitive = false}
+	implementation('org.apache.commons:commons-lang3:3.7')
+	implementation('junit:junit:4.12')
+	implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
+	implementation group: 'com.atlassian.jira', name: 'jira-rest-java-client-core', version: '5.1.0'
+	implementation group: 'io.atlassian.fugue', name: 'fugue', version: '4.7.2'
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.1'
+ 	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.1'
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.11.1'
+	implementation group: 'com.google.guava', name: 'guava', version: '20.0'
+}
+shadowJar {
+	doFirst {
+		println "ShadowJar build: $version"
+		archiveVersion.set(version)
+	}
+	archiveClassifier.set('')
+	from sourceSets.main.output, sourceSets.test.output
+	mergeServiceFiles {
+		setPath("META-INF/services")
+	}
+}
+task installResource(type: Copy) {
+    from 'src/log4j2.properties'
+    into 'build/install/Tunnel-shadow/resources/'
+}
+tasks.installResource.dependsOn tasks.installShadowDist

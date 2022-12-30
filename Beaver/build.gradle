@@ -14,8 +14,7 @@ description = 'Beaver:BillOfMaterials'
 group = 'io.avalon.bom'
 mainClassName = 'io.avalon.bom.BillOfMaterials'
 version = '1.0'
-applicationDefaultJvmArgs = ['-Dwebdriver.chrome.driver=../Groundhog/rsc/chromedriver.exe',
-"-Dlog4j.configurationFile=file:../resources/log4j2.properties"]
+applicationDefaultJvmArgs = ['-Dlog4j.configurationFile=file:../resources/log4j2.properties']
 
 javafx {
     version = "17.0.1"
