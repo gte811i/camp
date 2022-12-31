@@ -19,12 +19,13 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import lombok.extern.log4j.Log4j2;
 import processExcelCMD.CmdExcel;
 import utils.CmdLogger;
 
 @Component
+@Log4j2
 public class InsightController extends CmdLogger{
-	public static Logger logger=LoggerFactory.getLogger(InsightController.class);
 	static Stage primaryStage;
 	@FXML
 	private ResourceBundle resources;
@@ -61,14 +62,14 @@ public class InsightController extends CmdLogger{
 	 * 
 	 */
 	public InsightController() {
-		logger.debug("Loading InsightController UserName");
+		log.debug("Loading InsightController UserName");
 	}
 	public String getUserName() {
 		return is.getUserName();
 	}
 	@FXML
 	void selectSearch(ActionEvent event) {
-		logger.debug("Selecting Button");
+		log.debug("Selecting Button");
 	}
 
 	@FXML
@@ -76,8 +77,8 @@ public class InsightController extends CmdLogger{
 	{	
 		CmdExcel.setTrackerFolder(jobTrackerFolder);
 		CmdExcel.setDownloadFolder(downloadFolder);
-		logger.debug("Location of JobTracker.xls is: " + CmdExcel.getTrackerFolder());
-		logger.debug("Location of Download Location is: " + CmdExcel.getDownloadFolder());
+		log.debug("Location of JobTracker.xls is: " + CmdExcel.getTrackerFolder());
+		log.debug("Location of Download Location is: " + CmdExcel.getDownloadFolder());
 		CmdExcel.copyData();
 		CmdExcel.copySpreadsheets("A","Combined");
 		CmdExcel.copySpreadsheets("F","Combined");
@@ -94,8 +95,8 @@ public class InsightController extends CmdLogger{
 	{
 		CmdExcel.setTrackerFolder(jobTrackerFolder);
 		CmdExcel.setDownloadFolder(downloadFolder);
-		logger.debug("Location of JobTracker.xls is: " + CmdExcel.getTrackerFolder());
-		logger.debug("Location of Download Folder is: " + CmdExcel.getDownloadFolder());
+		log.debug("Location of JobTracker.xls is: " + CmdExcel.getTrackerFolder());
+		log.debug("Location of Download Folder is: " + CmdExcel.getDownloadFolder());
 		CmdExcel tmp = new CmdExcel();
 		ArrayList<String> urls = tmp.downloadDetails();
 		is.openWindow(urls.get(0));
@@ -150,8 +151,8 @@ public class InsightController extends CmdLogger{
 		assert competitorRdBtn != null : "fx:id=\"competitorRdBtn\" was not injected: check your FXML file 'InsightViewer.fxml'.";
 		assert iafRdBtn != null : "fx:id=\"iafRdBtn\" was not injected: check your FXML file 'InsightViewer.fxml'.";
 		assert fireRdBtn != null : "fx:id=\"fireRdBtn\" was not injected: check your FXML file 'InsightViewer.fxml'.";
-
 	}    
+
 	@FXML
 	void exit(ActionEvent event) {
 		WindowEvent wev = new WindowEvent(primaryStage,WindowEvent.WINDOW_CLOSE_REQUEST);
@@ -173,6 +174,10 @@ public class InsightController extends CmdLogger{
 	 */
 	public String getVersion() {
 		return version;
+	}
+	public void printData() {
+		log.debug("Download Folder: " + downloadFolder);
+		log.debug("Job Tracker Folder: " + jobTrackerFolder);
 	}
 
 }

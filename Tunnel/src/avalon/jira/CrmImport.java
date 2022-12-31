@@ -39,12 +39,15 @@ import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 
+import lombok.extern.log4j.Log4j2;
+
 
 /**
  * @author scarleton3
  *
  */
 @Component
+@Log4j2
 public class CrmImport {
 	public static Logger logger=LoggerFactory.getLogger(CrmImport.class);
 
@@ -126,7 +129,7 @@ public class CrmImport {
 				// Only collect projects that are current
 				if(!projectsHashMap.containsKey(dirOnly))
 					continue;
-				System.out.println("File is:" +f.getAbsolutePath());
+				log.debug("File is:" +f.getAbsolutePath());
 				File fcsv = new File(f.getAbsolutePath().replace("xls", "csv"));
 				if(!fcsv.exists()) {
 					pb = new ProcessBuilder("cscript","xlsTocsv.vbs",f.getAbsolutePath(),f.getAbsolutePath().replace("xls", "csv"));

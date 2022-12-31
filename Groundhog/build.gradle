@@ -117,7 +117,9 @@ dependencies {
     implementation "org.openjfx:javafx-graphics:11:win"
     implementation "org.openjfx:javafx-controls:11:win"
     implementation "org.openjfx:javafx-fxml:11:win"
-
+    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
+    
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 
 checkstyle {
@@ -130,13 +132,17 @@ task copyDocs(type: Copy) {
 }
 task generateDeploymentConfigFile(type: Copy) {
 	from 'deploy/template.properties'
-	into 'config/insight.properties'
+	into 'config/'
 	doFirst {
+	println System.env.USERPROFILE
+//    user_home = System.getenv("USERPROFILE")
+//	println 'USER HOME:' + user_home
 	filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
-		'download_location' : 'C://Users//scarleton//Downloads//',
-		'xls_location' : 'C://Users//scarleton//Google Drive//Avalon//',
-		'user_name' : 'gte811i'
+		'download_location' : System.env.USERPROFILE.replaceAll( "\\\\", '//' ) + '//Downloads//',
+		'xls_location' : 'Z://Jobs//Avalon//',
+		'user_name' : System.env.USERNAME
 	])
+	rename 'template.properties', 'insight.properties'
 	}
 }
 
@@ -160,7 +166,8 @@ task installConfig(type: Copy) {
 task installGroundhog(type: Copy) {
 }
 
-tasks.installConfig.dependsOn tasks.installShadowDist
+tasks.generateDeploymentConfigFile.dependsOn tasks.installShadowDist
+tasks.installConfig.dependsOn tasks.generateDeploymentConfigFile
 tasks.installResource.dependsOn tasks.installConfig
 tasks.installChrome.dependsOn tasks.installResource
 tasks.installGroundhog.dependsOn tasks.installChrome

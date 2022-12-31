@@ -15,8 +15,8 @@ import io.avalon.bom.database.CustomItemRepository;
 import io.avalon.bom.database.ItemRepository;
 
 
-@SpringBootApplication
-@EnableMongoRepositories
+//@SpringBootApplication
+//@EnableMongoRepositories
 public class MdbSpringBootApplication implements CommandLineRunner{
 	
 	@Autowired

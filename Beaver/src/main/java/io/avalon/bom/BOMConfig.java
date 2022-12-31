@@ -3,12 +3,14 @@
  */
 package io.avalon.bom;
 
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableMBeanExport;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 
@@ -23,6 +25,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableMBeanExport
 @PropertySource("classpath:application.properties")
 @PropertySource("file:config/version.properties")
+@EnableMongoRepositories
+@SpringBootApplication
 public class BOMConfig {
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {

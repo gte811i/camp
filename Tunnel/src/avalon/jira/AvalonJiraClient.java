@@ -105,7 +105,7 @@ public class AvalonJiraClient{
 		DateTimeFormatter csvDateTime = DateTimeFormatter.ofPattern("M/d/yyyy");
 		LocalDate bidDate = LocalDate.parse(project.getBidDate(), csvDateTime);
 		LocalDate followUpDate = LocalDate.parse(project.getFollowUp(), csvDateTime);
-		
+
 		IssueInput newIssue = new IssueInputBuilder(
 				ProjectTypes.AVALON, ProjectTypes.ISSUE_PROJECT, project.getProjectTitle())
 				.setFieldValue(ProjectTypes.PROJECT_ADDRESS, project.getAddress())
@@ -118,7 +118,7 @@ public class AvalonJiraClient{
 				.setFieldValue(ProjectTypes.PROJECT_FOLLOW_UP, followUpDate.format(jiraDateTime))
 				.setFieldValue(ProjectTypes.PROJECT_BID_DATE, bidDate.format(jiraDateTime))
 				.setFieldValue(ProjectTypes.PROJECT_TIME_ZONE, ComplexIssueInputFieldValue.with("value", project.getTimeZone()))
-//				.setFieldValue(ProjectTypes.PROJECT_TIME_ZONE_TXT, ComplexIssueInputFieldValue.with("value", project.getTimeZoneTxt()))
+				//				.setFieldValue(ProjectTypes.PROJECT_TIME_ZONE_TXT, ComplexIssueInputFieldValue.with("value", project.getTimeZoneTxt()))
 				.setFieldValue(ProjectTypes.PROJECT_JOB_TYPE, ComplexIssueInputFieldValue.with("value", project.getJobType()))
 				.setFieldValue(ProjectTypes.PROJECT_STATE, ComplexIssueInputFieldValue.with("value", project.getState()))
 				.build();
@@ -159,7 +159,7 @@ public class AvalonJiraClient{
 				ProjectTypes.CRM, ProjectTypes.ISSUE_QUOTE, quotes.getSummary())
 				.setFieldValue(ProjectTypes.QUOTE_COMPANY, quotes.getQuoteCompany())
 				.setFieldValue(ProjectTypes.QUOTE_CONTACT, quotes.getQuoteContact())
-//				.setFieldValue(ProjectTypes.QUOTE_PRICE, Integer.valueOf(quotes.getQuotePrice()))
+				//				.setFieldValue(ProjectTypes.QUOTE_PRICE, Integer.valueOf(quotes.getQuotePrice()))
 				.setFieldValue(ProjectTypes.QUOTE_PROJET, quotes.getQuoteProject())
 				.build();
 		logger.debug("Quote is: " + newIssue.toString());
@@ -228,16 +228,25 @@ public class AvalonJiraClient{
 		else if(!issueType.isEmpty())
 			jqlQuery += "issuetype = " + issueType;
 		logger.debug("Prior to searchJQL");
-		Promise<SearchResult> results = searchClient.searchJql(jqlQuery,Integer.valueOf(maxResults),Integer.valueOf(startIdx),fields);
-		logger.debug("After to searchJQL");
-		int totalResults = results.claim().getTotal();
-		collectIssues(issueSet, results.claim().getIssues());
-		while(startIdx < totalResults) {
-			results = searchClient.searchJql(jqlQuery,Integer.valueOf(maxResults),Integer.valueOf(startIdx),fields);
+		try {
+			Promise<SearchResult> results = searchClient.searchJql(jqlQuery,Integer.valueOf(maxResults),Integer.valueOf(startIdx),fields);
+			logger.debug("After to searchJQL");
+			int totalResults = results.claim().getTotal();
 			collectIssues(issueSet, results.claim().getIssues());
-			startIdx += maxResults;
+			while(startIdx < totalResults) {
+				try {
+					results = searchClient.searchJql(jqlQuery,Integer.valueOf(maxResults),Integer.valueOf(startIdx),fields);
+					collectIssues(issueSet, results.claim().getIssues());
+					startIdx += maxResults;
+				} catch( Exception e) {
+					logger.debug("Exception Timeout");
+				}
+			}
+			logger.debug("After to searchJQL2");
+		} catch(Exception e) {
+			logger.debug("Nesting!!!!!");
+			return getIssues(project,issueType);
 		}
-		logger.debug("After to searchJQL2");
 		return issueSet;
 	}
 

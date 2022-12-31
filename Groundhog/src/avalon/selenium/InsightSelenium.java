@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.apache.logging.log4j.Marker;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.ElementClickInterceptedException;
@@ -28,6 +29,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -36,8 +38,6 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -48,7 +48,7 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import utils.CmdLogger;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * @author scarleton3
@@ -59,6 +59,7 @@ import utils.CmdLogger;
 //		url     = "https://insight.cmdgroup.com"
 //		)
 @Component
+@Log4j2
 public class InsightSelenium {
 	@Value("${avalon.username}")
 	private String userName;
@@ -71,10 +72,10 @@ public class InsightSelenium {
 	Duration thirty =Duration.ofSeconds(30);
 	Duration five=Duration.ofSeconds(5);
 	//	private static String userName="scarleton3";
-	public static Logger logger=LoggerFactory.getLogger(CmdLogger.class);
 	By searchSelect = By.id("drpSearch-inputEl");
 	By moreBidders = By.id("lnkBidder");
-	By moreBARs = By.id("lnkBuyersActivityReport");
+	By moreBARs = By.id("btnbuyerActivityReport-btnEl");
+	//	By moreBARs = By.id("lnkBuyersActivityReport");
 	By searchList = By.className("x-boundlist-item");
 	By search = By.id("spnSearchClose0");
 	By matches = By.id("grdProjectMatches-body");
@@ -137,8 +138,8 @@ public class InsightSelenium {
 	private WebDriver driver; 
 
 	public void loginCMD() {
-//		System.setProperty("webdriver.firefox.marionette","C:\\geckodriver.exe");
-//		System.setProperty("webdriver.chrome.driver","chromedriver.exe");
+		//		System.setProperty("webdriver.firefox.marionette","C:\\geckodriver.exe");
+		//		System.setProperty("webdriver.chrome.driver","chromedriver.exe");
 		driver = new ChromeDriver();
 		//comment the above 2 lines and uncomment below 2 lines to use Chrome
 		//WebDriver driver = new ChromeDriver();
@@ -228,7 +229,7 @@ public class InsightSelenium {
 	}
 
 	public void openSearch(String searchName){
-		logger.debug("Opening Search for: " + searchName);
+		log.debug("Opening Search for: " + searchName);
 		By searchTerm = By.id(searchName);
 		try {
 			Thread.sleep(10000);
@@ -243,7 +244,7 @@ public class InsightSelenium {
 		actionsOS.moveToElement(ss).click().perform();
 		for(WebElement we: driver.findElements(searchTerm))
 		{
-			logger.debug("Test:" + we.getText());
+			log.debug("Test:" + we.getText());
 			actionsOS.moveToElement(we).perform();
 		}
 		WebElement st = driver.findElement(searchTerm);
@@ -254,10 +255,10 @@ public class InsightSelenium {
 		new WebDriverWait(driver, thirty).until((WebDriver dr1) -> dr1.findElement(record));
 		driver.findElement(record).getText();
 		WebElement prjName = driver.findElement(record).findElement(gridName);
-		logger.debug("Name:");
-		logger.debug(prjName.getText());
-		logger.debug(driver.findElement(record).getText());
-		logger.debug("DONE:");
+		log.debug("Name:");
+		log.debug(prjName.getText());
+		log.debug(driver.findElement(record).getText());
+		log.debug("DONE:");
 		prjName.click();
 		driver.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
 		new WebDriverWait(driver, sixty).until((WebDriver dr1) -> dr1.findElement(downloadDocs));
@@ -300,17 +301,17 @@ public class InsightSelenium {
 		String spec = new String();
 		for (WebElement element: allElements) {
 			List<WebElement> moreElement = element.findElements(title);
-			logger.debug("Elements: " + element.getText());
+			log.debug("Elements: " + element.getText());
 			for(WebElement e: moreElement)
 			{
-				logger.debug(":"+e.getText());
+				log.debug(":"+e.getText());
 
 				String[] list = e.getText().split("\n");
 
 				if(sm.currentState.equals(State.MatchSpecState))
 				{
 					String[] lista = e.getText().split("\\(");
-					logger.debug("State Machine Spec Section: " + lista[0]);
+					log.debug("State Machine Spec Section: " + lista[0]);
 					if(lista[0].equals("Structural "))
 					{
 						WebElement structDoc = e.findElement(By.xpath("parent::*")).findElement(checkbox);
@@ -335,7 +336,7 @@ public class InsightSelenium {
 							List<WebElement> docs = driver.findElements(title);
 							List<WebElement> docsText = docs.stream().filter(d -> d.getText().length() > 0).collect(Collectors.toList());
 							for(WebElement d : docsText){
-								logger.debug("Documents:" + d.getText().length() + ":" + d.getText());
+								log.debug("Documents:" + d.getText().length() + ":" + d.getText());
 								String docText = d.getText();
 								if(docText.contains(glazing))
 								{
@@ -348,7 +349,7 @@ public class InsightSelenium {
 									}
 									catch(StaleElementReferenceException ee)
 									{
-										logger.debug("Can't find: " + ee);
+										log.debug("Can't find: " + ee);
 									}
 								}
 							}
@@ -356,7 +357,7 @@ public class InsightSelenium {
 
 
 							List<WebElement> allSpecSections = driver.findElements(bySpec);
-							logger.debug("Specs: " + allSpecSections.toString());
+							log.debug("Specs: " + allSpecSections.toString());
 							for(WebElement we: allSpecSections){
 								//						System.out.println("All: " + we.getText().length());
 								if(we.getText().length()>0){
@@ -371,7 +372,7 @@ public class InsightSelenium {
 							actionsIs.click();
 							actionsIs.perform();
 						} catch(NoSuchElementException ne) {
-							logger.debug("No SpecDocs Element");
+							log.debug("No SpecDocs Element");
 						}
 					}
 					//					WebElement specSection = allSpecSections.get(0).findElement(By.xpath("parent::*")).findElement(checkbox);
@@ -386,12 +387,12 @@ public class InsightSelenium {
 		Dimension newSizeGrow = new Dimension(oldSize.getWidth(), oldSize.getHeight()+1);
 		Dimension newSizeShrink = new Dimension(oldSize.getWidth(), oldSize.getHeight()-1);
 		driver.manage().window().setSize(newSizeGrow);
-//		chk.click();
+		//		chk.click();
 		JavascriptExecutor js = (JavascriptExecutor)driver;
 		js.executeScript("arguments[0].click()", chk);
 		exportPdf();
 		driver.manage().window().setSize(newSizeShrink);
-//		chk.click();
+		//		chk.click();
 		js.executeScript("arguments[0].click()", chk);
 	}
 	private boolean clickDocuments(String docName,Actions actionsIs, WebElement chk, boolean pdfDownload) {
@@ -407,15 +408,15 @@ public class InsightSelenium {
 				exportPdf();
 				driver.manage().window().setSize(newSizeShrink);
 				chk.click();
-				logger.debug("Exported Document: "+docName);
+				log.debug("Exported Document: "+docName);
 			}
 			else {
 				driver.manage().window().setSize(newSizeShrink);
-				logger.debug("Will Export Document: "+docName);
+				log.debug("Will Export Document: "+docName);
 			}
 			return true;
 		}catch (Exception c) {
-			logger.error("Failed Export Document: "+docName);
+			log.error("Failed Export Document: "+docName);
 			//			Cannot Click Document b/c Downloading window is Open");
 		}
 		return false;
@@ -448,7 +449,7 @@ public class InsightSelenium {
 			{
 				if(archWE.getText().isEmpty())
 					continue;
-				logger.debug("Arch: " + archWE.getText());
+				log.debug("Arch: " + archWE.getText());
 				actionsIs.moveToElement(archWE);
 				actionsIs.click();
 				Thread.sleep(500);
@@ -458,7 +459,7 @@ public class InsightSelenium {
 			List<WebElement> docs = driver.findElements(title);
 			List<WebElement> docsText = docs.stream().filter(d -> d.getText().length() > 0).collect(Collectors.toList());
 			for(WebElement d : docsText){
-				logger.debug("Documents:" + d.getText().length() + ":" + d.getText());
+				log.debug("Documents:" + d.getText().length() + ":" + d.getText());
 				String docText = d.getText();
 				if((construction.matcher(docText).lookingAt()||door.matcher(docText).lookingAt() || frame.matcher(docText).lookingAt() ||floor.matcher(docText).lookingAt()
 						||opening.matcher(docText).lookingAt()||window.matcher(docText).lookingAt()||partition.matcher(docText).lookingAt()||ie.matcher(docText).lookingAt()||schedule.matcher(docText).lookingAt()||wall.matcher(docText).lookingAt())&& !demolition.matcher(docText).lookingAt())
@@ -474,16 +475,16 @@ public class InsightSelenium {
 					}
 					catch(StaleElementReferenceException ee)
 					{
-						logger.debug("Can't find: " + ee);
+						log.debug("Can't find: " + ee);
 					}
 				}
 			}
 			exportZip();
-			logger.debug("ArchDocs: " + allArch.toString());
+			log.debug("ArchDocs: " + allArch.toString());
 		}
 		catch(NoSuchElementException e)
 		{
-			logger.error(e.toString());
+			log.error(e.toString());
 		}
 	}
 
@@ -491,7 +492,7 @@ public class InsightSelenium {
 	public boolean popUpContinue(String message, String projectName)
 	{
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ContinueDownload.fxml"));
-		CmdLogger.logger.debug("Location " + fxmlLoader.getLocation().toString());
+		log.debug("Location " + fxmlLoader.getLocation().toString());
 		try {
 			Parent popUp = fxmlLoader.load();
 			ContinueController cc = fxmlLoader.getController();
@@ -508,15 +509,15 @@ public class InsightSelenium {
 				@Override
 				public void handle(WindowEvent event) {
 					okay = cc.isOkay();
-					logger.debug("Exit Continue Popup: " + okay);
+					log.debug("Exit Continue Popup: " + okay);
 				}};
 				dialog.setOnHidden(closeEvent);
 				dialog.setOnCloseRequest(closeEvent);
 				dialog.showAndWait();
 		} catch (IOException e) {
-			logger.error(e.toString());
+			log.error(e.toString());
 		}
-		logger.debug("Exit Continue Popup1: " + okay);
+		log.debug("Exit Continue Popup1: " + okay);
 		return okay;
 	}
 
@@ -524,7 +525,7 @@ public class InsightSelenium {
 	{
 		By status = By.id("FilterByStatusFilterHeader");
 		By showOnly = By.id("rbFilterConditionShowOnly-boxLabelEl");
-		By trackProject = By.id("rbFilterByStatusTracked-displayEl");
+		By trackProject = By.id("rbFilterByStatusTracked-boxLabelEl");
 		By applyFilter = By.id("btnApplyFilterByStatusSelection");
 		By exportDropDown = By.id("btnOpenExportPopup-btnEl");
 		By exportExcel = By.id("btnExportPopup-btnEl");
@@ -533,16 +534,28 @@ public class InsightSelenium {
 		try{
 			WebElement divFilterStatusEl = driver.findElement(status);
 			Actions actions = new Actions(driver);
-			actions.moveToElement(divFilterStatusEl).click().perform();
+			actions.moveToElement(divFilterStatusEl)
+			.click()
+			.pause(250)
+			.perform();
+			log.debug("Hitting Filter");
 			WebElement showOnlyEl = driver.findElement(showOnly);
 			WebElement applyFilterEl = driver.findElement(applyFilter);
 			WebElement trackProjectEl = driver.findElement(trackProject);
+			log.debug("Hitting Show Only");
 			actions.moveToElement(showOnlyEl)
 			.click()
-			.moveToElement(trackProjectEl)
+			.pause(250)
+			.perform();
+			log.debug("Hitting Tracked Projects");
+			actions.moveToElement(trackProjectEl)
 			.click()
-			.moveToElement(applyFilterEl)
+			.pause(250)
+			.perform();
+			log.debug("Hitting Apply");
+			actions.moveToElement(applyFilterEl)
 			.click()		
+			.pause(250)
 			.perform();
 
 			WebElement exportDropDownEl = driver.findElement(exportDropDown);
@@ -554,21 +567,22 @@ public class InsightSelenium {
 			File dir = new File("C:\\Users\\"+userName+"\\Downloads\\");
 			FileFilter fileFilter = new WildcardFileFilter("Project List*.xls");
 			File[] files = dir.listFiles(fileFilter);
-			while(files.length == 0){
-				Thread.sleep(500);
-				files = dir.listFiles(fileFilter);
-				logger.debug("Moving: "+ files.toString());
-			}
-			try {
-				FileUtils.copyFile(files[0], new File("C:\\Users\\"+userName+"\\Downloads\\"+renameProjecList+".xls"));
-				FileUtils.deleteQuietly(files[0]);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-
+			if(files != null) {
+				while(files.length == 0){
+					Thread.sleep(500);
+					files = dir.listFiles(fileFilter);
+					log.debug("Moving: "+ files.toString());
+				}
+				try {
+					FileUtils.copyFile(files[0], new File("C:\\Users\\"+userName+"\\Downloads\\"+renameProjecList+".xls"));
+					FileUtils.deleteQuietly(files[0]);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			} else
+				log.debug("No Project List");
 		} catch(NoSuchElementException e){
-			logger.error(e.getMessage());
+			log.error(e.getMessage());
 			return;
 		}
 		return;
@@ -590,7 +604,7 @@ public class InsightSelenium {
 		//				actionsIs.moveToElement(tab).click().perform();
 		//				getDocs = true;
 		//			} catch (Exception e ) {
-		//				logger.debug("Error: " + e);
+		//				log.debug("Error: " + e);
 		//				Thread.sleep(2500);
 		//				ArrayList<String> tabs2 = new ArrayList<> (driver.getWindowHandles());
 		//				driver.switchTo().window(tabs2.get(0));
@@ -605,20 +619,20 @@ public class InsightSelenium {
 		if(fav)
 		{
 			WebElement action = driver.findElement(favorite);
-			actionsIs.moveToElement(action).perform();
+			actionsIs.moveToElement(action).pause(250).perform();
 			actionsIs.click().perform();
 			try{
 				try{
 					WebElement moreBidder = driver.findElement(moreBidders);
-					actionsIs.moveToElement(moreBidder).click().perform();
+					actionsIs.moveToElement(moreBidder).click().pause(250).perform();
 				} catch(NoSuchElementException e){
-					logger.error("No More Bidders");
+					log.error("No More Bidders");
 				}
 				WebElement exportBidder = driver.findElement(exportBidders);
-				actionsIs.moveToElement(exportBidder).perform();
+				actionsIs.moveToElement(exportBidder).pause(250).perform();
 				int scroll = 250;
 				((JavascriptExecutor) driver).executeScript("scrollBy(0," + String.valueOf(scroll)+")","");
-				actionsIs.moveToElement(exportBidder).click().perform();
+				actionsIs.moveToElement(exportBidder).click().pause(250).perform();
 				WebElement entityCodeEl = driver.findElement(entityCode);
 				String id = entityCodeEl.getAttribute("value");
 				File bidderOld = new File("C:\\Users\\"+userName+"\\Downloads\\Prospective Bidders.xls");
@@ -631,19 +645,20 @@ public class InsightSelenium {
 					e.printStackTrace();
 				}
 			} catch (NoSuchElementException e){
-				logger.error("Bidder List does not Exist:");
+				log.error("Bidder List does not Exist:");
 			}
 			try{
 				try {
 					WebElement moreBAR = driver.findElement(moreBARs);
-					actionsIs.moveToElement(moreBAR).click().perform();
+					actionsIs.moveToElement(moreBAR).click().pause(250).perform();
+					log.debug("Downloading BAR");
 				} catch(NoSuchElementException e){
-					logger.error("No More BAR");
+					log.error("No More BAR");
 				}
 				WebElement exportBuyer = driver.findElement(exportBuyerActivity);
-				actionsIs.moveToElement(exportBuyer).click().perform();
+				actionsIs.moveToElement(exportBuyer).click().pause(250).perform();
 			} catch (NoSuchElementException e){
-				logger.error("Buyer Activity Report does not Exist:");
+				log.error("Buyer Activity Report does not Exist:");
 			}
 		}
 
@@ -664,7 +679,7 @@ public class InsightSelenium {
 			moreProjects = false;
 
 		while(moreProjects) {
-			logger.debug("Unviewed Prj: " + ue.getText());
+			log.debug("Unviewed Prj: " + ue.getText());
 			String projectName = ue.getText();
 			int scroll = 0;
 			boolean found = false;
@@ -675,7 +690,7 @@ public class InsightSelenium {
 					Thread.sleep(1000);
 					found = true;
 				}catch (Exception e ) {
-					logger.debug("Error: " + e);
+					log.debug("Error: " + e);
 					Thread.sleep(2500);
 					ArrayList<String> tabs2 = new ArrayList<> (driver.getWindowHandles());
 					driver.switchTo().window(tabs2.get(0));
@@ -725,8 +740,8 @@ public class InsightSelenium {
 					Thread.sleep(1000);
 					found = true;
 				}catch (Exception e ) {
-					logger.debug("Error: " + e);
-//					Thread.sleep(2500);
+					log.debug("Error: " + e);
+					//					Thread.sleep(2500);
 					scroll += 250;
 					((JavascriptExecutor) driver).executeScript("scroll(0," + String.valueOf(scroll)+")","");
 				}
@@ -844,7 +859,7 @@ public class InsightSelenium {
 		new WebDriverWait(driver, sixty).until((WebDriver dr1) -> dr1.findElement(viewed));
 		List<WebElement> un = driver.findElements(viewed);
 		WebElement vi = un.get(0);
-		logger.debug("Viewed Prj: " + vi.getText());
+		log.debug("Viewed Prj: " + vi.getText());
 		try {
 			new WebDriverWait(driver, sixty).until((WebDriver dr1) -> dr1.findElement(gridMatchingDocs));
 			WebElement docButton = vi.findElement(gridMatchingDocs);
@@ -852,9 +867,9 @@ public class InsightSelenium {
 			JavascriptExecutor js = (JavascriptExecutor)driver;
 			js.executeScript("arguments[0].click()", docButton);
 		}catch(NoSuchElementException e){
-			logger.error("No Such Element" + e);
+			log.error("No Such Element" + e);
 		}catch(ElementClickInterceptedException e) {
-			logger.error("Using JavaScript to Click");
+			log.error("Using JavaScript to Click");
 			WebElement docButton = vi.findElement(gridMatchingDocs);
 			JavascriptExecutor js = (JavascriptExecutor)driver;
 			js.executeScript("arguments[0].click()", docButton);
@@ -864,26 +879,29 @@ public class InsightSelenium {
 		Actions actionsIs = new Actions(driver);
 		WebElement exportDetailsEl = driver.findElement(exportDetails);
 		actionsIs.moveToElement(exportDetailsEl).click().perform();
-		new WebDriverWait(driver, sixty).until((WebDriver dr1) -> dr1.findElement(exportItem));
+		try {
+			new WebDriverWait(driver, sixty).until((WebDriver dr1) -> dr1.findElement(exportItem));
+		} catch(TimeoutException e) {
+			log.error("No Export Items");
+		}
 		List<WebElement> exList = driver.findElements(exportItem);
 		for(WebElement ex:exList){
-			logger.debug("Export Item: " + ex.getText());
+			log.debug("Export Item: " + ex.getText());
 			try{
 				WebElement downloadEl =	ex.findElement(download);
 				actionsIs.moveToElement(downloadEl).click().perform();
 			}catch (NoSuchElementException e ) {
-				logger.error("Fault:" + e);
+				log.error("Fault:" + e);
 			}
 		}
 		try{
 			WebElement deleteAllEl =	driver.findElement(deleteAll);
-			actionsIs.moveToElement(deleteAllEl).click().perform();
-			Thread.sleep(500);
+			actionsIs.moveToElement(deleteAllEl).click().pause(500).perform();
 			WebElement deleteAllYesEl =	driver.findElement(deleteAllYes);
 			actionsIs.moveToElement(deleteAllYesEl).click().perform();
-		}catch(NoSuchElementException | InterruptedException e)
+		}catch(NoSuchElementException e)
 		{
-			logger.debug("No documents to download");
+			log.debug("No documents to download");
 		}
 		driver.close();
 		driver.switchTo().window(orgHandle);

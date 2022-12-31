@@ -54,6 +54,7 @@ public class InsightScrapper extends Application{
 				primaryStage.setScene(scene); 
 				controller = fxmlLoader.getController();
 				CmdLogger.logger.debug("UserName Loaded is: "+ controller.getUserName());
+				controller.printData();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
