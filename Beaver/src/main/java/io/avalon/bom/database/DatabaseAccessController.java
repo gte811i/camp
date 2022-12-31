@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import io.avalon.bom.BillOfMaterialsController;
 import io.avalon.bom.components.Finish;
+import javafx.event.ActionEvent;
 /**
  * @author gte81
  *
@@ -59,7 +60,17 @@ public class DatabaseAccessController {
 //		finishItemRepo.save(new Finish("Clear Anodized", "Clear Anodized"));
 //		finishItemRepo.save(new Finish("Black Anodized", "Black Anodized"));
 //		finishItemRepo.save(new Finish("A2", "A2"));
-		
+		allValues.getItems().addAll(itemList);
 		log.debug("Data creation Finished...");
 	}
+	
+    @FXML
+    void addValue(ActionEvent event) {
+
+    }
+
+    @FXML
+    void deleteValue(ActionEvent event) {
+
+    }
 }
