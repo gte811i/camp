@@ -5,10 +5,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
+import io.avalon.bom.components.Elevation;
+import io.avalon.bom.components.Finish;
 import io.avalon.bom.database.DatabaseAccessController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -36,6 +39,8 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class BillOfMaterialsController{
+	@Autowired
+	Elevation elevation;
 	static Stage primaryStage;
 	@FXML
 	private ResourceBundle resources;
@@ -50,7 +55,7 @@ public class BillOfMaterialsController{
     private ChoiceBox<?> centerHungPivotCB;
 
     @FXML
-    private ChoiceBox<?> colorCB;
+    private ChoiceBox<Finish> colorCB;
 
     @FXML
     private TextField concealedCloserTF;
@@ -220,6 +225,7 @@ public class BillOfMaterialsController{
 		        System.out.println("Box # Value: " +centerHungPivotCB.getItems().get(newNumber.intValue()));
 		      }
 		    });
+ 	      colorCB.itemsProperty().bind(elevation.finishListProperty());
 	      colorCB.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 		      @Override
 		      public void changed(ObservableValue<? extends Number> observableValue, Number oldNumber, Number newNumber) {
@@ -369,7 +375,9 @@ public class BillOfMaterialsController{
     void addColor(ActionEvent event) {
     	FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/database_access.fxml"));
     	try {
+//    		fxmlLoader.setController(new DatabaseAccessController());
     		fxmlLoader.setControllerFactory(ctx::getBean);
+//    		fxmlLoader.;
     		Parent root = fxmlLoader.load();
     		DatabaseAccessController controller = fxmlLoader.getController();
     		controller.setItemType("Finish");
