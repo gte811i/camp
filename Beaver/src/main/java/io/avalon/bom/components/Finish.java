@@ -18,16 +18,23 @@ public class Finish {
 	@Id
 	private IntegerProperty id = new SimpleIntegerProperty();
 	private StringProperty name = new SimpleStringProperty();
+	private StringProperty code = new SimpleStringProperty();
 
 	/**
 	 * @param id
 	 * @param name
 	 */
 	@PersistenceCreator
-	public Finish(IntegerProperty id, StringProperty name) {
+	public Finish(IntegerProperty id, StringProperty name, StringProperty code) {
 		super();
 		this.id = id;
 		this.name = name;
+		this.code = code;
+	}
+	public Finish(String name, String code) {
+		super();
+		this.name.set(name);
+		this.code.set(code);
 	}
 
 	/**
@@ -55,8 +62,18 @@ public class Finish {
 	public void setName(String name) {
 		this.name.set(name);
 	}
+	public String getCode() {
+		return code.get();
+	}
+	public void setCode(String code) {
+		this.code.set(code);
+	}
+	
 	public StringProperty nameProperty() {
 		return name;
+	}
+	public StringProperty codeProperty() {
+		return code;
 	}
 	public IntegerProperty idProperty() {
 		return id;

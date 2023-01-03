@@ -27,10 +27,12 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <Button fx:id="addBtn" mnemonicParsing="false" onAction="#addValue" text="Add" GridPane.rowIndex="1" />
-                  <Button fx:id="deleteBtn" mnemonicParsing="false" onAction="#deleteValue" text="Delete" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  <TextField fx:id="valueTxtField" GridPane.columnIndex="1" />
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Value" />
+                  <Button fx:id="addBtn" mnemonicParsing="false" onAction="#addValue" text="Add" GridPane.rowIndex="2" />
+                  <Button fx:id="deleteBtn" mnemonicParsing="false" onAction="#deleteValue" text="Delete" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <TextField fx:id="idTxtField" GridPane.columnIndex="1" />
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Nomenclature" />
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Name" GridPane.rowIndex="1" />
+                  <TextField fx:id="valueTxtField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                </children>
             </GridPane>
          </children>
