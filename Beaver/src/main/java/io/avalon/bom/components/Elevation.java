@@ -12,12 +12,15 @@ import io.avalon.bom.database.ItemRepository;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * @author gte81
  *
  */
 @Component
+@Log4j2
 public class Elevation {
 	@Autowired
 	ItemRepository finishItemRepo;
@@ -26,6 +29,21 @@ public class Elevation {
 	@PostConstruct
 	public void init() {
 		finishListProperty.addAll(finishItemRepo.findAll());
+		
+		finishListProperty.addListener(new ListChangeListener<Finish>() {
+			@Override
+			public void onChanged(Change<? extends Finish> c) {
+				c.next();
+				c.getRemoved().forEach(x->{
+					log.debug("Deleting: " + x +  "");
+					finishItemRepo.delete(x);
+				});
+				c.getAddedSubList().forEach(x->{
+					log.debug("Adding: " + x +  "");
+					finishItemRepo.insert(x);
+				});
+			}
+		  });
 	}
 	public ListProperty<Finish> finishListProperty() {
 		return finishListProperty;

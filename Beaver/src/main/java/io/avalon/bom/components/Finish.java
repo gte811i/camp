@@ -1,6 +1,7 @@
 package io.avalon.bom.components;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -17,6 +18,17 @@ public class Finish {
 	@Id
 	private IntegerProperty id = new SimpleIntegerProperty();
 	private StringProperty name = new SimpleStringProperty();
+
+	/**
+	 * @param id
+	 * @param name
+	 */
+	@PersistenceCreator
+	public Finish(IntegerProperty id, StringProperty name) {
+		super();
+		this.id = id;
+		this.name = name;
+	}
 
 	/**
 	 * @param id
