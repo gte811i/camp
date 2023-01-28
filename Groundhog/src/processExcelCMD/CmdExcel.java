@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import org.apache.poi.openxml4j.util.ZipSecureFile;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AgeFileFilter;
@@ -76,6 +77,7 @@ public class CmdExcel extends CmdLogger{
 				newProjects.add(project);
 			}
 			/// Old Data
+			ZipSecureFile.setMinInflateRatio(0);
 			try(Workbook wb = WorkbookFactory.create(inTracker)){
 				Sheet sheetCombined = wb.getSheet(sheetName);
 				Row headerJT = sheetCombined.getRow(0);
