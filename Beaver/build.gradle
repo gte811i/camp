@@ -78,7 +78,11 @@ configurations.implementation {
 }
 
 dependencies {
-	implementation 'org.springframework:spring-context:5.3.22'
+	implementation 'org.springframework:spring-context:5.3.24'
+	implementation 'org.springframework:spring-beans:5.3.24'
+    implementation 'org.springframework:spring-web:5.3.24'
+	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.14.1'
+	
 //	implementation 'com.gluonhq:webscheduler:1.0.5'
 	
 //    implementation 'com.gluonhq.compat:javadate:1.1'
