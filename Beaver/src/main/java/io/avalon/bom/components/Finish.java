@@ -14,7 +14,7 @@ import javafx.beans.property.StringProperty;
 
 @Document("Finish")
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.PUBLIC_ONLY, setterVisibility = Visibility.PUBLIC_ONLY)
-public class Finish {
+public class Finish extends AvalonObject{
 	@Id
 	private IntegerProperty id = new SimpleIntegerProperty();
 	private StringProperty name = new SimpleStringProperty();
@@ -55,13 +55,16 @@ public class Finish {
 		this.id = id;
 	}
 
+	@Override
 	public String getName() {
 		return name.get();
 	}
 
+	@Override
 	public void setName(String name) {
 		this.name.set(name);
 	}
+	@Override
 	public String getCode() {
 		return code.get();
 	}
@@ -69,9 +72,11 @@ public class Finish {
 		this.code.set(code);
 	}
 	
+	@Override
 	public StringProperty nameProperty() {
 		return name;
 	}
+	@Override
 	public StringProperty codeProperty() {
 		return code;
 	}

@@ -108,6 +108,7 @@ public class InsightController extends CmdLogger{
 		boolean pause = selectChkBtn.isSelected();
 		try {
 			is.loginCMD();
+			
 			if(avalonRdBtn.isSelected()) {
 				is.openSearch("Avalon");
 				is.iterateSearch("A",pause);

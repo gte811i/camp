@@ -58,10 +58,11 @@
   -fx-background-color: transparent;
 }
 
-#portrait {
-  -fx-image: url('http://www.whitehouse.gov/sites/default/files/first-family/masthead_image/16al_header_sm.jpg?1250877868');
+.hyperlink {
+    -fx-border-color: transparent;
+    -fx-padding: 4 0 4 0;
+    -fx-underline: false;
 }
-
-#signature {
-  -fx-image: url('http://upload.wikimedia.org/wikipedia/en/thumb/c/c8/A_Lincoln_signature.png/320px-A_Lincoln_signature.png');
+.hyperlink:visited {
+    -fx-text-fill: blue;
 }

@@ -39,8 +39,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
+<?import org.controlsfx.control.*?>
 
-<VBox prefHeight="600.0" prefWidth="1165.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.avalon.bom.BillOfMaterialsController">
+<VBox prefHeight="600.0" prefWidth="1165.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.avalon.bom.BillOfMaterialsController">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
@@ -313,9 +314,9 @@
 						</FXCollections>
 					</items>
                   </ChoiceBox>                  
-                  <Label alignment="CENTER" layoutX="35.0" layoutY="259.0" text="Color:" />
-                  <ChoiceBox fx:id="colorCB" layoutX="93.0" layoutY="255.0" prefHeight="26.0" prefWidth="104.0">
-                  </ChoiceBox>                  
+                  <Hyperlink fx:id="hyperlinkColor" layoutX="34.0" layoutY="255.0" onAction="#addColor" stylesheets="@front_end.css" text="Color:" />
+                  <PrefixSelectionComboBox fx:id="colorCB" editable="false" layoutX="93.0" layoutY="255.0" prefHeight="26.0" prefWidth="104.0">
+                  </PrefixSelectionComboBox>
                   <CheckBox id="selectChkBtn" fx:id="transomCxBx" layoutX="112.0" layoutY="299.0" mnemonicParsing="false" onAction="#selectTransom" text="Transom" />
                   <CheckBox fx:id="leftSidelightCxBx" layoutX="8.0" layoutY="299.0" mnemonicParsing="false" onAction="#selectLeftSidelight" text="Left Sidelight" />
                   <CheckBox fx:id="rightSidelightCxBx" layoutX="9.0" layoutY="325.0" mnemonicParsing="false" onAction="#selectRightSidelight" text="Right Sidelight" />
@@ -371,12 +372,7 @@
 							<String fx:value="Single" />
 						</FXCollections>
 					</items>
-                  </ChoiceBox>
-                  <Button fx:id="colorAddBtn" alignment="CENTER" graphicTextGap="0.0" layoutX="10.0" layoutY="260.0" mnemonicParsing="false" onAction="#addColor" prefHeight="0.0" prefWidth="18.0" text="+" textAlignment="CENTER" textOverrun="CLIP">
-                     <font>
-                        <Font name="System Bold" size="8.0" />
-                     </font>
-                  </Button>                  
+                  </ChoiceBox>                  
           </children>
         </AnchorPane>
       </items>

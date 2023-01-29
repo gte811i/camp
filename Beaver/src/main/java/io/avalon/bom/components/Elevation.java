@@ -24,28 +24,28 @@ import lombok.extern.log4j.Log4j2;
 public class Elevation {
 	@Autowired
 	ItemRepository finishItemRepo;
-	private final ListProperty<Finish> finishListProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
+	private final ListProperty<AvalonObject> finishListProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
 
 	@PostConstruct
 	public void init() {
 		finishListProperty.addAll(finishItemRepo.findAll());
 		
-		finishListProperty.addListener(new ListChangeListener<Finish>() {
+		finishListProperty.addListener(new ListChangeListener<AvalonObject>() {
 			@Override
-			public void onChanged(Change<? extends Finish> c) {
+			public void onChanged(Change<? extends AvalonObject> c) {
 				c.next();
 				c.getRemoved().forEach(x->{
 					log.debug("Deleting: " + x +  "");
-					finishItemRepo.delete(x);
+					finishItemRepo.delete((Finish) x);
 				});
 				c.getAddedSubList().forEach(x->{
 					log.debug("Adding: " + x +  "");
-					finishItemRepo.insert(x);
+					finishItemRepo.insert((Finish)x);
 				});
 			}
 		  });
 	}
-	public ListProperty<Finish> finishListProperty() {
+	public ListProperty<AvalonObject> finishListProperty() {
 		return finishListProperty;
 	}
 

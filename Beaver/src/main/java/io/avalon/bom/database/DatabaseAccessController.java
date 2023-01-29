@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import io.avalon.bom.components.AvalonObject;
 import io.avalon.bom.components.Elevation;
 import io.avalon.bom.components.Finish;
 import javafx.beans.value.ChangeListener;
@@ -28,7 +29,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Data
 @Component
-public class DatabaseAccessController {
+public class DatabaseAccessController<T> {
 	@Autowired
 	Elevation elevation;
 	@Autowired
@@ -39,13 +40,13 @@ public class DatabaseAccessController {
 	private Button addBtn;
 
 	@FXML
-	private TableView<Finish> tblValues;
+	private TableView<AvalonObject> tblValues;
 
 	@FXML
-    private TableColumn<Finish, String> idCol;
+    private TableColumn<AvalonObject, String> idCol;
 
     @FXML
-    private TableColumn<Finish, String> valueCol;
+    private TableColumn<AvalonObject, String> valueCol;
 
     @FXML
 	private Button deleteBtn;
@@ -66,9 +67,9 @@ public class DatabaseAccessController {
 		valueCol.setCellFactory(TextFieldTableCell.forTableColumn());
 		valueCol.setOnEditCommit(e -> e.getTableView().getItems().get(e.getTablePosition().getRow()).setName(e.getNewValue()));
 		tblValues.setEditable(true);
-		tblValues.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Finish>() {
+		tblValues.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<AvalonObject>() {
 			@Override
-			public void changed(ObservableValue<? extends Finish> observable, Finish oldValue, Finish newValue) {
+			public void changed(ObservableValue<? extends AvalonObject> observable, AvalonObject oldValue, AvalonObject newValue) {
 				valueTxtField.setText(newValue.getName());
 				idTxtField.setText(newValue.getCode());
 			}
@@ -97,7 +98,7 @@ public class DatabaseAccessController {
 
     @FXML
     void deleteValue(ActionEvent event) {
-    	Finish data = tblValues.getSelectionModel().getSelectedItem();
+    	Finish data = (Finish) tblValues.getSelectionModel().getSelectedItem();
     	elevation.finishListProperty().remove(data);
     }
 }

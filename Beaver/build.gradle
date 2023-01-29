@@ -78,6 +78,7 @@ configurations.implementation {
 }
 
 dependencies {
+	implementation 'org.controlsfx:controlsfx:11.1.2'
 	implementation 'org.springframework:spring-context:5.3.24'
 	implementation 'org.springframework:spring-beans:5.3.24'
     implementation 'org.springframework:spring-web:5.3.24'

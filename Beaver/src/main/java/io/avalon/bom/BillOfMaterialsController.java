@@ -5,11 +5,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import org.controlsfx.control.PrefixSelectionComboBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
+import io.avalon.bom.components.AvalonObject;
 import io.avalon.bom.components.Elevation;
 import io.avalon.bom.components.Finish;
 import io.avalon.bom.database.DatabaseAccessController;
@@ -44,8 +46,6 @@ public class BillOfMaterialsController{
 	static Stage primaryStage;
 	@FXML
 	private ResourceBundle resources;
-    @FXML
-    private Button colorAddBtn;
 	@FXML
 	private URL location;
 	@FXML
@@ -55,7 +55,7 @@ public class BillOfMaterialsController{
     private ChoiceBox<?> centerHungPivotCB;
 
     @FXML
-    private ChoiceBox<Finish> colorCB;
+    private PrefixSelectionComboBox<AvalonObject> colorCB;
 
     @FXML
     private TextField concealedCloserTF;
@@ -218,6 +218,7 @@ public class BillOfMaterialsController{
 	@FXML
 	void initialize() {
 		log.debug("Checking Initialization");
+		ControlsUtil.setSearchParameters(colorCB);
 //	      buttTypeTF;
 	      centerHungPivotCB.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 		      @Override
@@ -229,7 +230,7 @@ public class BillOfMaterialsController{
 	      colorCB.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 		      @Override
 		      public void changed(ObservableValue<? extends Number> observableValue, Number oldNumber, Number newNumber) {
-		        System.out.println("Box # Value: " +colorCB.getItems().get(newNumber.intValue()));
+		        log.debug("ColorBox # Value: " +colorCB.getItems().get(newNumber.intValue()));
 		      }
 		    });
 //	      concealedCloserTF;
@@ -242,7 +243,7 @@ public class BillOfMaterialsController{
 	      doubleEgressCB.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 		      @Override
 		      public void changed(ObservableValue<? extends Number> observableValue, Number oldNumber, Number newNumber) {
-		        System.out.println("Box # Value: " +doubleEgressCB.getItems().get(newNumber.intValue()));
+		        log.debug("Box # Value: " +doubleEgressCB.getItems().get(newNumber.intValue()));
 		      }
 		    });
 //	      doubleLipStrikeTF;
@@ -371,26 +372,26 @@ public class BillOfMaterialsController{
 		WindowEvent wev = new WindowEvent(primaryStage,WindowEvent.WINDOW_CLOSE_REQUEST);
 		Event.fireEvent(primaryStage, wev);
 	}
-    @FXML
-    void addColor(ActionEvent event) {
+	private void databaseAccessView(String itemType, String title) {
     	FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/database_access.fxml"));
     	try {
-//    		fxmlLoader.setController(new DatabaseAccessController());
     		fxmlLoader.setControllerFactory(ctx::getBean);
-//    		fxmlLoader.;
     		Parent root = fxmlLoader.load();
     		DatabaseAccessController controller = fxmlLoader.getController();
-    		controller.setItemType("Finish");
+    		controller.setItemType(itemType);
     		Stage stage = new Stage();
-    		stage.setTitle("Color List");
+    		stage.setTitle(title);
     		stage.setScene(new Scene(root, 450, 450));
     		stage.show();
-    		// Hide this current window (if this is what you want)
-    		//            ((Node)(event.getSource())).getScene().getWindow().hide();
         }
         catch (IOException e) {
             e.printStackTrace();
         }
+	}
+
+	@FXML
+    void addColor(ActionEvent event) {
+		databaseAccessView("Finish", "Color List");
     }
 	/**
 	 * @param primaryStage the primaryStage to set
