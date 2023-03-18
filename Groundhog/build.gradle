@@ -95,8 +95,8 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework:spring-context:5.3.22'
-
-	implementation('org.seleniumhq.selenium:selenium-java:4.0.0-alpha-2')
+	implementation 'org.seleniumhq.selenium:selenium-java:4.8.1'
+	
 	implementation('commons-io:commons-io:2.6')
 	implementation('commons-logging:commons-logging:latest.integration') {transitive = false}
 	implementation('org.apache.pdfbox:pdfbox:2.0.8') {transitive = false}
