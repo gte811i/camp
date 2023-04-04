@@ -33,8 +33,10 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.interactions.MoveTargetOutOfBoundsException;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -67,7 +69,7 @@ public class InsightSelenium {
 	Pattern p;
 	Matcher m;
 	int attempts;
-	int MAX_ATTEMPTS = 10;
+	int MAX_ATTEMPTS = 20;
 	Duration sixty =Duration.ofSeconds(60);
 	Duration thirty =Duration.ofSeconds(30);
 	Duration five=Duration.ofSeconds(5);
@@ -102,6 +104,7 @@ public class InsightSelenium {
 	By gridValue = By.className("x-grid-cell-colValue");
 	By gridFloorArea = By.className("x-grid-cell-colFloorArea");
 	By gridMatchingDocs = By.className("x-grid-cell-colMatchingDocs");
+	By href = By.tagName("a");
 
 	By unviewed = By.className("unviewed-row");
 	By viewed = By.className("viewed-row");
@@ -140,7 +143,9 @@ public class InsightSelenium {
 	public void loginCMD() {
 		//		System.setProperty("webdriver.firefox.marionette","C:\\geckodriver.exe");
 		//		System.setProperty("webdriver.chrome.driver","chromedriver.exe");
-		driver = new ChromeDriver();
+		ChromeOptions options = new ChromeOptions();
+		options.addArguments("--remote-allow-origins=*");
+		driver = new ChromeDriver(options);
 		//comment the above 2 lines and uncomment below 2 lines to use Chrome
 		//WebDriver driver = new ChromeDriver();
 
@@ -190,7 +195,7 @@ public class InsightSelenium {
 			}
 		}
 
-		if (size > 1) System.err.println("WARN: There are more than 1 " + by.toString() + " 's!");
+		if (size > 1) log.error("WARN: There are more than 1 " + by.toString() + " 's!");
 
 		return driver.findElement(by);
 	}
@@ -263,6 +268,7 @@ public class InsightSelenium {
 		driver.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
 		new WebDriverWait(driver, sixty).until((WebDriver dr1) -> dr1.findElement(downloadDocs));
 		driver.findElement(downloadDocs).click();
+		log.debug("openProject WaitForWindow");
 		waitForWindow(".*Document.*");//documentcenter.cmdgroup.com");
 		switchToWindow(".*Document.*");
 	}
@@ -421,12 +427,23 @@ public class InsightSelenium {
 		}
 		return false;
 	}
+	
+	private boolean exists(By element) {
+		Duration implicitWait = driver.manage().timeouts().getImplicitWaitTimeout();
+		driver.manage().timeouts().implicitlyWait(Duration.ofMillis(0));
+		final List<WebElement> signOut = driver.findElements(element);
+		driver.manage().timeouts().implicitlyWait(implicitWait); // Restore implicit wait to previous value
+		if (signOut.isEmpty())
+			return false;
+		return true;
+	}
 	public void findArchDocuments() throws InterruptedException
 	{
 		try{
-			if(driver.findElements(planAddendaDocs).size() != 0)
-				driver.findElement(planAddendaDocs).findElement(expandor).click(); //if not exist??
-			driver.findElement(planDocs).findElement(expandor).click();
+			if(exists(planAddendaDocs))
+				driver.findElement(planAddendaDocs).findElement(expandor).click();
+			if(exists(planDocs))
+				driver.findElement(planDocs).findElement(expandor).click();
 			By arch = By.xpath("//span[text()='Architectural ']");
 			By others = By.xpath("//span[text()='Other ']");
 			Pattern construction = Pattern.compile(".*\\bConstruction Plan\\b.*");
@@ -589,116 +606,130 @@ public class InsightSelenium {
 	}
 	public void viewProject(WebElement ue,boolean fav) throws InterruptedException
 	{
-		By exportBidders = By.id("btnbidderExport-btnEl");
-		By exportBuyerActivity = By.id("btnbuyerActivityReport");
-		By entityCode = By.id("EntityCode");
 		Actions actionsIs = new Actions(driver);
 		WebElement weRightClick;
-		//		boolean getDocs = false;			boolean found2 = false;
-		//		while(!getDocs) {
-		//			try {
-		//				weRightClick = ue.findElement(gridId);
-		//				actionsIs.moveToElement(weRightClick).perform();
-		//				actionsIs.contextClick(weRightClick).perform();
-		//				WebElement tab = driver.findElement(newTab);
-		//				actionsIs.moveToElement(tab).click().perform();
-		//				getDocs = true;
-		//			} catch (Exception e ) {
-		//				log.debug("Error: " + e);
-		//				Thread.sleep(2500);
-		//				ArrayList<String> tabs2 = new ArrayList<> (driver.getWindowHandles());
-		//				driver.switchTo().window(tabs2.get(0));
-		//				Thread.sleep(2500);
-		//			}
-		//		}
-		Thread.sleep(2500);
+		waitForWindow(".*ProjectInformation.*");//documentcenter.cmdgroup.com");
 		ArrayList<String> tabs2 = new ArrayList<> (driver.getWindowHandles());
-		driver.switchTo().window(tabs2.get(1));
+		driver.switchTo().window(tabs2.get(1)); //TODO: Sometimes tab is slow and tabs is only 1 when should be 2
 		new WebDriverWait(driver, sixty).until((WebDriver dr1) -> dr1.findElement(downloadDocs));
-		Thread.sleep(2500);
+//		Thread.sleep(2500);
 		if(fav)
 		{
 			WebElement action = driver.findElement(favorite);
 			actionsIs.moveToElement(action).pause(250).perform();
 			actionsIs.click().perform();
 			try{
-				try{
-					WebElement moreBidder = driver.findElement(moreBidders);
-					actionsIs.moveToElement(moreBidder).click().pause(250).perform();
-				} catch(NoSuchElementException e){
-					log.error("No More Bidders");
-				}
-				WebElement exportBidder = driver.findElement(exportBidders);
-				actionsIs.moveToElement(exportBidder).pause(250).perform();
-				int scroll = 250;
-				((JavascriptExecutor) driver).executeScript("scrollBy(0," + String.valueOf(scroll)+")","");
-				actionsIs.moveToElement(exportBidder).click().pause(250).perform();
-				WebElement entityCodeEl = driver.findElement(entityCode);
-				String id = entityCodeEl.getAttribute("value");
-				File bidderOld = new File("C:\\Users\\"+userName+"\\Downloads\\Prospective Bidders.xls");
-				while(!bidderOld.exists())
-					Thread.sleep(500);
-				File bidderNew = new File("C:\\Users\\"+userName+"\\Downloads\\Prospective Bidders"+id+".xls");
-				try {
-					FileUtils.moveFile(bidderOld, bidderNew);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				downloadBidders();
 			} catch (NoSuchElementException e){
 				log.error("Bidder List does not Exist:");
 			}
 			try{
-				try {
-					WebElement moreBAR = driver.findElement(moreBARs);
-					actionsIs.moveToElement(moreBAR).click().pause(250).perform();
-					log.debug("Downloading BAR");
-				} catch(NoSuchElementException e){
-					log.error("No More BAR");
-				}
-				WebElement exportBuyer = driver.findElement(exportBuyerActivity);
-				actionsIs.moveToElement(exportBuyer).click().pause(250).perform();
+				downloadBuyerActivityReport();
 			} catch (NoSuchElementException e){
 				log.error("Buyer Activity Report does not Exist:");
 			}
 		}
-
 		driver.close();
 		driver.switchTo().window(orgHandle);
+	}
+	private void downloadBidders() throws InterruptedException {
+		By exportBidders = By.id("btnbidderExport-btnEl");
+		By entityCode = By.id("EntityCode");
+		Actions actionsIs = new Actions(driver);
+		try{
+			WebElement moreBidder = driver.findElement(moreBidders);
+			actionsIs.moveToElement(moreBidder).click().pause(250).perform();
+		} catch(NoSuchElementException e){
+			log.error("No More Bidders");
+		}
+		WebElement exportBidder = driver.findElement(exportBidders);
+		actionsIs.moveToElement(exportBidder).pause(250).perform();
+		int scroll = 250;
+		((JavascriptExecutor) driver).executeScript("scrollBy(0," + String.valueOf(scroll)+")","");
+		actionsIs.moveToElement(exportBidder).click().pause(250).perform();
+		WebElement entityCodeEl = driver.findElement(entityCode);
+		String id = entityCodeEl.getAttribute("value");
+		File bidderOld = new File("C:\\Users\\"+userName+"\\Downloads\\Prospective Bidders.xls");
+		while(!bidderOld.exists())
+			Thread.sleep(500);
+		File bidderNew = new File("C:\\Users\\"+userName+"\\Downloads\\Prospective Bidders"+id+".xls");
+		try {
+			FileUtils.moveFile(bidderOld, bidderNew);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+	private void downloadBuyerActivityReport() {
+		By exportBuyerActivity = By.id("btnbuyerActivityReport");
+		By projectShareBy = By.id("projectShareHistoryExport");
+		Actions actionsIs = new Actions(driver);
+//		try {
+//			WebElement moreBAR = driver.findElement(moreBARs);
+//			actionsIs.moveToElement(moreBAR).click().pause(250).perform();
+//			log.debug("Downloading BAR");
+//		} catch(NoSuchElementException e){
+//			log.error("No More BAR");
+//		}
+		WebElement exportBuyer = driver.findElement(exportBuyerActivity);
+		WebElement projectShare = driver.findElement(projectShareBy);
+		actionsIs.moveToElement(projectShare).build().perform();;
+		actionsIs.click(exportBuyer).build().perform();
+		log.debug("Got " + exportBuyer.getText());
+	}
+	private boolean clickDocument(WebElement ue) throws Exception {
+		boolean found = false;
+		new WebDriverWait(driver, five).until((WebDriver dr1) -> dr1.findElement(gridMatchingDocs));
+		WebElement we = ue.findElement(gridMatchingDocs);
+		Actions actionsIs = new Actions(driver);
+		WebElement clicky = we.findElement(href);
+		try {
+			int scroll = 50;
+//			Thread.sleep(250);
+			log.debug("Clicking: " + clicky.getText());
+			//Scroll to take care of stupid agent online/offline at bottom right
+			actionsIs.moveToElement(clicky).build().perform();
+			((JavascriptExecutor) driver).executeScript("scrollBy(0," + String.valueOf(scroll)+")","");
+		} catch( MoveTargetOutOfBoundsException e) {
+			log.error("Move Out of Bounds: ");
+		}
+		actionsIs.click(clicky);
+		actionsIs.build().perform();
+		found = true;
+		return found;
 	}
 	public void iterateSearch(String renameProjectList,boolean pause) throws InterruptedException
 	{
 		Thread.sleep(500);
 		List<WebElement> un = refreshWindow();
+		int i = 0;
 		WebElement ue = null;
-		boolean moreProjects;
-		if(!un.isEmpty()) {
-			moreProjects = true;
-			ue = un.get(0);
-		}
-		else
-			moreProjects = false;
+//		boolean moreProjects;
+//		if(!un.isEmpty())
+//			moreProjects = true;
+//		}
+//		else
+//			moreProjects = false;
 
-		while(moreProjects) {
+		while(i < un.size()) {
+			ue = un.get(i++);
 			log.debug("Unviewed Prj: " + ue.getText());
 			String projectName = ue.getText();
-			int scroll = 0;
+			int scroll = 50;
 			boolean found = false;
 			while(!found) {
 				try {
-					new WebDriverWait(driver, five).until((WebDriver dr1) -> dr1.findElement(gridMatchingDocs));
-					ue.findElement(gridMatchingDocs).click();
-					Thread.sleep(1000);
-					found = true;
+					found = clickDocument(ue);
 				}catch (Exception e ) {
 					log.debug("Error: " + e);
 					Thread.sleep(2500);
 					ArrayList<String> tabs2 = new ArrayList<> (driver.getWindowHandles());
 					driver.switchTo().window(tabs2.get(0));
-					scroll += 250;
-					((JavascriptExecutor) driver).executeScript("scroll(0," + String.valueOf(scroll)+")","");
+					((JavascriptExecutor) driver).executeScript("scrollBy(0," + String.valueOf(scroll)+")","");
 				}
 			}
-			Thread.sleep(2000);
+//			Need to wait and then must switch to get document data
+			log.debug("IterateSearch WaitForWindow");
 			waitForWindow(".*Document.*");//documentcenter.cmdgroup.com");
 			switchToWindow(".*Document.*");
 			boolean saveProject = false;
@@ -722,38 +753,41 @@ public class InsightSelenium {
 
 			driver.close();
 			driver.switchTo().window(orgHandle);
-			un = refreshWindow();
-			scroll = 0;
-			found = false;
-			ue = un.get(0);
-			while(!found) {
-				try {
-					Actions actionsIs = new Actions(driver);
-					WebElement weRightClick;
-
-					new WebDriverWait(driver, five).until((WebDriver dr1) -> dr1.findElement(gridMatchingDocs));
-					weRightClick = ue.findElement(gridId);
-					actionsIs.moveToElement(weRightClick).perform();
-					actionsIs.contextClick(weRightClick).perform();
-					WebElement tab = driver.findElement(newTab);
-					actionsIs.moveToElement(tab).click().perform();
-					Thread.sleep(1000);
-					found = true;
-				}catch (Exception e ) {
-					log.debug("Error: " + e);
-					//					Thread.sleep(2500);
-					scroll += 250;
-					((JavascriptExecutor) driver).executeScript("scroll(0," + String.valueOf(scroll)+")","");
-				}
-			}
-
+//			un = refreshWindow();
+			openProjectTab(ue);
 			viewProject(ue,saveProject);
-			if(un.size()==1) 
-				moreProjects = false; 
-			else
-				un = refreshWindow();
-			ue = un.get(0);
+//			if(i==1) 
+//				moreProjects = false; 
+//			else
+//				un = refreshWindow();
+//			ue = un.get(i++);
 		}
+		refreshWindow();
+	}
+	private void openProjectTab(WebElement ue) {
+		int scroll = 50;
+		boolean found = false;
+//		WebElement ue = un.get(0);
+		while(!found) {
+			try {
+				log.debug("Finding: " + ue.getText());
+				Actions actionsIs = new Actions(driver);
+				WebElement weRightClick;
+
+				new WebDriverWait(driver, five).until((WebDriver dr1) -> dr1.findElement(gridMatchingDocs));
+				weRightClick = ue.findElement(gridId);
+				actionsIs.moveToElement(weRightClick).perform();
+//				((JavascriptExecutor) driver).executeScript("scrollBy(0," + String.valueOf(scroll)+")","");
+				actionsIs.moveToElement(weRightClick).perform();
+				actionsIs.contextClick(weRightClick).perform();
+				WebElement tab = driver.findElement(newTab);
+				actionsIs.moveToElement(tab).click().perform();
+				found = true;
+			}catch (Exception e ) {
+				log.debug("Error: " + e);
+			}
+		}
+		
 	}
 	public List<WebElement> refreshWindow() {
 		driver.navigate().refresh();
@@ -768,7 +802,7 @@ public class InsightSelenium {
 
 		for (String window : windows) {
 			driver.switchTo().window(window);
-			System.out.println(String.format("#switchToWindow() : title=%s ; url=%s",	
+			log.debug(String.format("#switchToWindow() : title=%s ; url=%s",	
 					driver.getTitle(),
 					driver.getCurrentUrl()));
 
@@ -821,7 +855,7 @@ public class InsightSelenium {
 			fail("Window with title: " + regex + " did not appear after " + MAX_ATTEMPTS + " tries. Exiting.");
 			return;
 		}
-		System.out.println("#waitForWindow() : Window doesn't exist yet. [" + regex + "] Trying again. " + (attempts+1) + "/" + MAX_ATTEMPTS);
+		log.debug("#waitForWindow() : Window doesn't exist yet. [" + regex + "] Trying again. " + (attempts+1) + "/" + MAX_ATTEMPTS);
 		attempts++;
 		try {Thread.sleep(1000);}catch(Exception x) { x.printStackTrace(); }
 		waitForWindow(regex);
@@ -874,6 +908,7 @@ public class InsightSelenium {
 			JavascriptExecutor js = (JavascriptExecutor)driver;
 			js.executeScript("arguments[0].click()", docButton);
 		}
+		log.debug("DownloadDocuments WaitForWindow");
 		waitForWindow(".*Document.*");//documentcenter.cmdgroup.com");
 		switchToWindow(".*Document.*");
 		Actions actionsIs = new Actions(driver);
