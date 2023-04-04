@@ -1,0 +1,64 @@
+syntax = "proto2";
+
+option java_package = "com.whitespace.worldline";
+option java_outer_classname = "WorldLineSensorsProto";
+
+message TowerEvent {
+    enum PhoneEventType {
+    GPRS = 0;
+    SMS = 1;
+    CALL = 2;
+    }
+
+    required string TowerID = 1;
+    required double TowerLat = 2;
+    required double TowerLon = 3;
+    required int64 StartTime = 4;
+    required int64 EndTime = 5;
+    required PhoneEventType EventType = 6;
+    required string IMSI = 7;
+    required string PhoneNumber = 8;
+    
+    required int32 CellID = 9;
+    required int32 CellOrientation = 10;
+    
+    optional bool IsDeviceSender = 11;
+    optional string ParticipatingDeviceNumber = 12;
+}
+
+message LPREvent {
+    required string ReaderID = 1;
+    required double ReaderLat = 2;
+    required double ReaderLon = 3;
+    required int32 ReaderOrientation = 4;
+    required int64 EventDateTime = 5;
+    required string LicensePlate = 6;
+    required string LicenseState = 7;
+}
+
+message GPSVehicleEvent
+{
+    required string LicensePlate = 1;
+    required string LicenseState = 2;
+    required int64 GPSEventDateTime = 3;
+    required double GPSLatitude = 4;
+    required double GPSLongitude = 5;
+}
+
+message PersonGroundTruthEvent
+{
+    required string LastName = 1;
+    required string FirstName = 2;
+    required string MiddleName = 3;
+    required string DriversLicense = 4;
+    required double PersonLatitude = 5;
+    required double PersonLongitude = 6;
+    required int64 EventDateTime = 7;
+}
+
+message WorldLineSensorData{
+    repeated TowerEvent CellTowerEvents = 1;
+    repeated LPREvent LicensePlateReaderEvents = 2;
+    repeated GPSVehicleEvent GPSEvents = 3;
+    repeated PersonGroundTruthEvent GroundTruthEvents = 4;
+}

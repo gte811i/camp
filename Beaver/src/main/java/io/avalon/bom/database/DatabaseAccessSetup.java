@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.avalon.bom.components.Finish;
+import io.avalon.bom.database.repository.FinishRepository;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 @Log4j2
@@ -16,7 +17,7 @@ import lombok.extern.log4j.Log4j2;
 @Component
 public class DatabaseAccessSetup {
 	@Autowired
-	ItemRepository finishItemRepo;
+	FinishRepository finishItemRepo;
 	@Autowired
 	CustomItemRepository customRepo;
 

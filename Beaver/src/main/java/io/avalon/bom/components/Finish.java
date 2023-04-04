@@ -68,6 +68,7 @@ public class Finish extends AvalonObject{
 	public String getCode() {
 		return code.get();
 	}
+	@Override
 	public void setCode(String code) {
 		this.code.set(code);
 	}
@@ -87,5 +88,9 @@ public class Finish extends AvalonObject{
 	@Override
 	public String toString() {
 		return name.get();
+	}
+	@Override
+	public AvalonObject createAvalonObject(String name, String code) {
+		return new Finish(name, code);
 	}
 }

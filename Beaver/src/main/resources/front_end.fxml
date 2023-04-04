@@ -41,7 +41,7 @@
 <?import javafx.scene.text.*?>
 <?import org.controlsfx.control.*?>
 
-<VBox prefHeight="600.0" prefWidth="1165.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.avalon.bom.BillOfMaterialsController">
+<VBox prefHeight="600.0" prefWidth="1165.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.avalon.bom.controller.BillOfMaterialsController">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
@@ -304,7 +304,7 @@
 						</FXCollections>
 					</items>
                   </ChoiceBox>                  
-                  <Label layoutX="22.0" layoutY="226.0" text="Throat Size:" />
+                  <Hyperlink layoutX="22.0" layoutY="226.0" onAction="#addThroat" stylesheets="@front_end.css" text="Throat Size:" />
                   <ChoiceBox id="throatSizeCB" fx:id="throatSizeCB" layoutX="94.0" layoutY="222.0" prefHeight="27.0" prefWidth="104.0">
                   	<items>
 						<FXCollections fx:factory="observableArrayList">

@@ -1,0 +1,48 @@
+syntax = "proto2";
+
+option java_package = "com.whitespace.worldline";
+option java_outer_classname = "WorldLineStaticProto";
+
+
+message DepartmentMotorVehicles {
+
+    enum Sex {
+        MALE = 0;
+        FEMALE = 1;
+    }
+
+    required string LastName = 1;
+    required string FirstName = 2;
+    required string MiddleName = 3;
+    required Sex PersonsSex = 4;
+    required string LicenseNumber = 5;
+    required int64 BirthDate = 6;
+    required string EyeColor = 7;
+    required string HairColor = 8;
+    required int32 Height = 9;
+    required int32 Weight = 10;
+    required string Race = 11;
+    required string HomeAddress = 12;
+    required double HomeAddressLat = 13;
+    required double HomeAddressLon = 14;
+    required string PhoneNumber = 15;
+}
+
+message VehicleRegistration {
+    optional string VehicleMake = 1;
+    optional string VehicleModel = 2;
+    optional int32 VehicleYear = 3;
+    optional string VehicleColor = 4;
+    optional string VehicleIdentificationNumber = 5;
+    required string VehicleLicensePlate = 6;
+    required string VehicleLicenseState = 7;
+    optional string VehicleOwnerLastName = 8;
+    optional string VehicleOwnerFirstName = 9;
+    optional string VehicleOwnerMiddleName = 10;
+    optional string VehicleOwnerDriversLicense = 11;
+}
+
+message WorldLineStaticData{
+    repeated VehicleRegistration VehicleRecords = 1;
+    repeated DepartmentMotorVehicles DMVRecords = 2;
+}

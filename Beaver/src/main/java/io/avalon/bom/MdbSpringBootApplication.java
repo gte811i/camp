@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 import io.avalon.bom.components.Finish;
 import io.avalon.bom.database.CustomItemRepository;
-import io.avalon.bom.database.ItemRepository;
+import io.avalon.bom.database.repository.FinishRepository;
 
 
 //@SpringBootApplication
@@ -20,7 +20,7 @@ import io.avalon.bom.database.ItemRepository;
 public class MdbSpringBootApplication implements CommandLineRunner{
 	
 	@Autowired
-	ItemRepository groceryItemRepo;
+	FinishRepository groceryItemRepo;
 	
 	@Autowired
 	CustomItemRepository customRepo;
