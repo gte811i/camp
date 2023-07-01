@@ -728,10 +728,10 @@ public class InsightSelenium {
 					((JavascriptExecutor) driver).executeScript("scrollBy(0," + String.valueOf(scroll)+")","");
 				}
 			}
-//			Need to wait and then must switch to get document data
 			log.debug("IterateSearch WaitForWindow");
 			waitForWindow(".*Document.*");//documentcenter.cmdgroup.com");
 			switchToWindow(".*Document.*");
+//			Need to wait and then must switch to get document data
 			boolean saveProject = false;
 			if(pause){
 				if(popUpContinue("Download Specification Documents?",projectName))
@@ -817,7 +817,8 @@ public class InsightSelenium {
 		fail("Could not switch to window with title / url: " + regex);
 		return;
 	}
-	public void waitForWindow(String regex) {
+	public void waitForWindow(String regex) throws AssertionError{
+		attempts = 0;
 		Set<String> windows = driver.getWindowHandles();
 		for (String window : windows) {
 			try {
@@ -852,8 +853,7 @@ public class InsightSelenium {
 
 		// when we reach this point, that means no window exists with that title..
 		if (attempts == MAX_ATTEMPTS) {
-			fail("Window with title: " + regex + " did not appear after " + MAX_ATTEMPTS + " tries. Exiting.");
-			return;
+			throw new AssertionError("Window with title: " + regex + " did not appear after " + MAX_ATTEMPTS + " tries. Exiting.");
 		}
 		log.debug("#waitForWindow() : Window doesn't exist yet. [" + regex + "] Trying again. " + (attempts+1) + "/" + MAX_ATTEMPTS);
 		attempts++;
