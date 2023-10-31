@@ -9,7 +9,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class ContinueController extends AbstractController{
 
     @FXML
@@ -47,7 +49,7 @@ public class ContinueController extends AbstractController{
     }
     @FXML
     void onOkay() {
-    	logger.debug("On Okay");
+    	log.debug("On Okay");
     	okay = true;
     	primaryStage.close();
     }

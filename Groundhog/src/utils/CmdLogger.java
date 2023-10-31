@@ -6,16 +6,18 @@ package utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import lombok.extern.log4j.Log4j2;
+
 // TODO: Auto-generated Javadoc
 /**
  * Utility class containing utilities for MintApp.
  * 
  * @author scarleton3
  */
+@Log4j2
 public class CmdLogger implements Thread.UncaughtExceptionHandler{
 	
 	/** A final static logger instance. */
-	public static Logger logger=LoggerFactory.getLogger(CmdLogger.class);
     /**
      * Configures the log4j. This code
      * checks to see if there are any appenders defined for log4j which is the
@@ -46,6 +48,6 @@ public class CmdLogger implements Thread.UncaughtExceptionHandler{
 	 */
 	@Override
 	public void uncaughtException(Thread t, Throwable e) {
-		logger.error("Uncaught exception in thread: " + t.getName(), e);
+		log.error("Uncaught exception in thread: " + t.getName(), e);
 	}
 }

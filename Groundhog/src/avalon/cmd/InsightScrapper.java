@@ -11,6 +11,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import lombok.extern.log4j.Log4j2;
 import processExcelCMD.InsightConfig;
 import utils.CmdLogger;
 /**
@@ -21,6 +22,7 @@ import utils.CmdLogger;
  * @author scarleton3
  *
  */
+@Log4j2
 public class InsightScrapper extends Application{
 	InsightController controller;
 	public static void main(String[] args){
@@ -44,16 +46,16 @@ public class InsightScrapper extends Application{
 		InsightController.setPrimaryStage(primaryStage);
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/InsightViewer.fxml"));
 		if(fxmlLoader.getLocation() == null)
-			CmdLogger.logger.error("Cannot find InsightViewer.fxml");
+			log.error("Cannot find InsightViewer.fxml");
 		else {
-			CmdLogger.logger.debug("Location " + fxmlLoader.getLocation().toString());
+			log.debug("Location " + fxmlLoader.getLocation().toString());
 			try {
 				fxmlLoader.setControllerFactory(ctx::getBean);
 				Parent root = fxmlLoader.load();
 				Scene scene = new Scene(root, root.prefWidth(-1), root.prefHeight(-1));
 				primaryStage.setScene(scene); 
 				controller = fxmlLoader.getController();
-				CmdLogger.logger.debug("UserName Loaded is: "+ controller.getUserName());
+				log.debug("UserName Loaded is: "+ controller.getUserName());
 				controller.printData();
 			} catch (IOException e) {
 				e.printStackTrace();

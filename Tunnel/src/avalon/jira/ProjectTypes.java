@@ -51,8 +51,8 @@ public class ProjectTypes{
 	public static String QUOTE_NUMBER = "customfield_20500";
 	
 	public static String PROJECT_ZIP = "customfield_10412";
-	public static String PROJECT_TIME_ZONE = "customfield_10415"; //
-	public static String PROJECT_TIME_ZONE_TXT = "customfield_21200"; //
+//	public static String PROJECT_TIME_ZONE = "customfield_10415"; //
+//	public static String PROJECT_TIME_ZONE_TXT = "customfield_21200"; //
 	public static String PROJECT_PROP_NUMBER = "customfield_10801";
 	public static String PROJECT_ADDRESS = "customfield_10213";
 	public static String PROJECT_FOLDER_NAME = "customfield_10218"; //

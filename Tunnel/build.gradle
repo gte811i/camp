@@ -13,7 +13,7 @@ semver {
 sourceCompatibility = 1.9
 targetCompatibility = 1.9
 version = '1.0'
-mainClassName = 'CrmImport.JiraImportCrm'
+mainClassName = 'avalon.jira.Tunnel'
 applicationDefaultJvmArgs = ['-Dlog4j.configurationFile=file:../resources/log4j2.properties']
 jar {
 	manifest {
@@ -72,9 +72,9 @@ dependencies {
  	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.1'
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.11.1'
 	implementation group: 'com.google.guava', name: 'guava', version: '20.0'
-    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
+    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
     
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
 shadowJar {
 	doFirst {
@@ -87,8 +87,41 @@ shadowJar {
 		setPath("META-INF/services")
 	}
 }
+
+task generateDeploymentConfigFile(type: Copy) {
+	from 'deploy/template.properties'
+	into 'config/'
+	doFirst {
+	println System.env.USERPROFILE
+//    user_home = System.getenv("USERPROFILE")
+//	println 'USER HOME:' + user_home
+	filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
+		'download_location' : System.env.USERPROFILE.replaceAll( "\\\\", '//' ) + '//Downloads//',
+		'xls_location' : 'Z://Jobs//Avalon//',
+		'user_name' : System.env.USERNAME
+	])
+	rename 'template.properties', 'insight.properties'
+	}
+}
+
+task installChrome(type: Copy) {
+    from 'rsc/chromedriver.exe'
+    into 'build/install/Tunnel-shadow/resources/'
+}
 task installResource(type: Copy) {
     from 'src/log4j2.properties'
     into 'build/install/Tunnel-shadow/resources/'
 }
-tasks.installResource.dependsOn tasks.installShadowDist
+task installConfig(type: Copy) {
+    from 'config/'
+    include "*.properties"
+    into 'build/install/Tunnel-shadow/bin/config/'
+}
+task installTunnel(type: Copy) {
+}
+
+//tasks.generateDeploymentConfigFile.dependsOn tasks.installShadowDist
+//tasks.installConfig.dependsOn tasks.generateDeploymentConfigFile
+tasks.installConfig.dependsOn tasks.installShadowDist
+tasks.installResource.dependsOn tasks.installConfig
+tasks.installTunnel.dependsOn tasks.installResource
