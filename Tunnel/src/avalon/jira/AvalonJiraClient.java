@@ -240,7 +240,7 @@ public class AvalonJiraClient{
 			}
 			log.debug("Finished building searchJQL");
 		} catch(Exception e) {
-			log.debug("Nesting!!!!!");
+			log.error("Exception NESTING due to failure in building searchJQL");
 			return getIssues(project,issueType);
 		}
 		return issueSet;
