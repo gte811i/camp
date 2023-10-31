@@ -9,6 +9,8 @@ plugins {
 semver {
     properties = "config/version.properties" // read and save properties in "my.version"
 }
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 
 sourceCompatibility = 1.9
 targetCompatibility = 1.9
@@ -17,7 +19,12 @@ mainClassName = 'avalon.jira.Tunnel'
 applicationDefaultJvmArgs = ['-Dlog4j.configurationFile=file:../resources/log4j2.properties']
 jar {
 	manifest {
-		attributes 'Implementation-Title': 'Gradle Quickstart', 'Implementation-Version': version
+		attributes(
+		"Implementation-Title": project.name,
+		"Implementation-Version": semver.semver,
+		"Main-Class": mainClassName,
+		"Class-Path": configurations.all.collect {it.getName()}.join(' ')
+		)
 	}
 }
 sourceSets {
@@ -25,14 +32,6 @@ sourceSets {
 		java {
 			srcDir 'src'
 		 }
-		resources {
-			srcDir 'resources'
-		}
-	}
-	test {
-		java {
-			srcDir 'src'
-		}
 		resources {
 			srcDir 'resources'
 		}
