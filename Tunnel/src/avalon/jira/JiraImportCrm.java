@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
@@ -25,6 +26,8 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 public class JiraImportCrm {
+	@Value("${avalon.jiraUrl}")
+	private String jiraUrl;
 	private HashSet<ContactCsv> contactAddList = new HashSet<>();
 	private HashSet<CompanyCsv> companyAddList = new HashSet<>();
 	private HashSet<QuotesCsv> quoteAddList = new HashSet<>();
@@ -132,10 +135,11 @@ public class JiraImportCrm {
 		}
 	}
 	public void initJira() {
+		log.debug("Connecting to: " + jiraUrl);
 		jiraClient = new AvalonJiraClient(
 				"scarleton", 
 				"lamas123", 
-				"http://10.1.10.235:8080");
+				jiraUrl);
 	}
 	public void getJiraCompanies() {
 		companies = jiraClient.getCompanies();
