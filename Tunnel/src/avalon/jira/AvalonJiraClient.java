@@ -223,7 +223,7 @@ public class AvalonJiraClient{
 			jqlQuery += " AND " + "issuetype = " + issueType;
 		else if(!issueType.isEmpty())
 			jqlQuery += "issuetype = " + issueType;
-		log.debug("Building searchJQL");
+		log.debug("Building searchJQL: " + jqlQuery);
 		try {
 			Promise<SearchResult> results = searchClient.searchJql(jqlQuery,Integer.valueOf(maxResults),Integer.valueOf(startIdx),fields);
 			int totalResults = results.claim().getTotal();
@@ -240,7 +240,7 @@ public class AvalonJiraClient{
 			}
 			log.debug("Finished building searchJQL");
 		} catch(Exception e) {
-			log.error("Exception NESTING due to failure in building searchJQL");
+			log.error("Exception NESTING due to failure in building searchJQL: " + e);
 			return getIssues(project,issueType);
 		}
 		return issueSet;

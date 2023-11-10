@@ -65,7 +65,7 @@ dependencies {
 	implementation('org.apache.commons:commons-lang3:3.7')
 	implementation('junit:junit:4.12')
 	implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
-	implementation group: 'com.atlassian.jira', name: 'jira-rest-java-client-core', version: '5.1.0'
+	implementation group: 'com.atlassian.jira', name: 'jira-rest-java-client-core', version: '5.2.4'
 	implementation group: 'io.atlassian.fugue', name: 'fugue', version: '4.7.2'
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.1'
  	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.1'
