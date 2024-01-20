@@ -6,41 +6,33 @@ package avalon.jira;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.rest.client.api.IssueRestClient;
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.SearchRestClient;
 import com.atlassian.jira.rest.client.api.domain.Comment;
 import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.input.ComplexIssueInputFieldValue;
-import com.atlassian.jira.rest.client.api.domain.input.FieldInput;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
-import com.google.common.base.Objects;
 //import com.google.common.base.Objects.toStringHelper;
 import io.atlassian.util.concurrent.Promise;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * @author scarleton3
  *
  */
+@Log4j2
 public class AvalonJiraClient{
-	public static Logger logger=LoggerFactory.getLogger(JiraImportCrm.class);
 	private String username;
 	private String password;
 	private String jiraUrl;
@@ -76,8 +68,8 @@ public class AvalonJiraClient{
 		Set<Issue> issueSet = new HashSet<>();
 		resetFields();
 		fields.add(ProjectTypes.PROJECT_ZIP);
-		fields.add(ProjectTypes.PROJECT_TIME_ZONE);
-		fields.add(ProjectTypes.PROJECT_TIME_ZONE_TXT);
+//		fields.add(ProjectTypes.PROJECT_TIME_ZONE);
+//		fields.add(ProjectTypes.PROJECT_TIME_ZONE_TXT);
 		fields.add(ProjectTypes.PROJECT_PROP_NUMBER);
 		fields.add(ProjectTypes.PROJECT_ADDRESS);
 		fields.add(ProjectTypes.PROJECT_FOLDER_NAME);
@@ -97,6 +89,7 @@ public class AvalonJiraClient{
 		fields.add(ProjectTypes.PROJECT_AL_DOORS); 
 		fields.add(ProjectTypes.PROJECT_LINK);
 		fields.add(ProjectTypes.PROJECT_QUOTES);
+		log.debug("Grabbing Projects from JIRA");
 		return getIssues(ProjectTypes.AVALON,ProjectTypes.PROJECT);
 	}
 	public String createProjectIssue(ProjectCsv project) {
@@ -117,12 +110,12 @@ public class AvalonJiraClient{
 				.setFieldValue(ProjectTypes.PROJECT_LINK, project.getLink())
 				.setFieldValue(ProjectTypes.PROJECT_FOLLOW_UP, followUpDate.format(jiraDateTime))
 				.setFieldValue(ProjectTypes.PROJECT_BID_DATE, bidDate.format(jiraDateTime))
-				.setFieldValue(ProjectTypes.PROJECT_TIME_ZONE, ComplexIssueInputFieldValue.with("value", project.getTimeZone()))
+//				.setFieldValue(ProjectTypes.PROJECT_TIME_ZONE, ComplexIssueInputFieldValue.with("value", project.getTimeZone()))
 				//				.setFieldValue(ProjectTypes.PROJECT_TIME_ZONE_TXT, ComplexIssueInputFieldValue.with("value", project.getTimeZoneTxt()))
 				.setFieldValue(ProjectTypes.PROJECT_JOB_TYPE, ComplexIssueInputFieldValue.with("value", project.getJobType()))
 				.setFieldValue(ProjectTypes.PROJECT_STATE, ComplexIssueInputFieldValue.with("value", project.getState()))
 				.build();
-		logger.debug("Issue is: " + newIssue.toString());
+		log.debug("Issue is: " + newIssue.toString());
 		return issueClient.createIssue(newIssue).claim().getKey();
 	}
 
@@ -136,6 +129,8 @@ public class AvalonJiraClient{
 		fields.add(ProjectTypes.COMPANY_CONTACTS);
 		fields.add(ProjectTypes.COMPANY_QUOTES);
 		fields.add(ProjectTypes.COMPANY_EMAIL);
+		log.debug("Grabbing Companies from JIRA");
+
 		return getIssues(ProjectTypes.CRM,ProjectTypes.COMPANY);
 	}
 	public String createCompanyIssue(CompanyCsv company) {
@@ -149,7 +144,7 @@ public class AvalonJiraClient{
 				.setFieldValue(ProjectTypes.COMPANY_STATE, company.getCompanyState())
 				.setFieldValue(ProjectTypes.COMPANY_ZIP, company.getCompanyZip())
 				.build();
-		logger.debug("Company is: " + newIssue.toString());
+		log.debug("Company is: " + newIssue.toString());
 		return issueClient.createIssue(newIssue).claim().getKey();
 	}
 
@@ -162,7 +157,7 @@ public class AvalonJiraClient{
 				//				.setFieldValue(ProjectTypes.QUOTE_PRICE, Integer.valueOf(quotes.getQuotePrice()))
 				.setFieldValue(ProjectTypes.QUOTE_PROJET, quotes.getQuoteProject())
 				.build();
-		logger.debug("Quote is: " + newIssue.toString());
+		log.debug("Quote is: " + newIssue.toString());
 		return issueClient.createIssue(newIssue).claim().getKey();
 	}
 	public Set<Issue> getQuotes(){
@@ -172,6 +167,7 @@ public class AvalonJiraClient{
 		fields.add(ProjectTypes.QUOTE_CONTACT);
 		fields.add(ProjectTypes.QUOTE_PRICE);
 		fields.add(ProjectTypes.QUOTE_PROJET);
+		log.debug("Grabbing Quotes from JIRA");
 		return getIssues(ProjectTypes.CRM,ProjectTypes.QUOTE);
 	}
 	public String createContactIssue(ContactCsv contact) {
@@ -191,7 +187,7 @@ public class AvalonJiraClient{
 				.setFieldValue(ProjectTypes.CONTACT_LAST_NAME, contact.getLastName())
 				.setFieldValue(ProjectTypes.CONTACT_COMPANY, contact.getCompany())
 				.build();
-		logger.debug("Contact is: " + newIssue.toString());
+		log.debug("Contact is: " + newIssue.toString());
 		return issueClient.createIssue(newIssue).claim().getKey();
 	}
 	public Set<Issue> getContacts(){
@@ -210,11 +206,11 @@ public class AvalonJiraClient{
 		fields.add(ProjectTypes.CONTACT_POSITION);
 		fields.add(ProjectTypes.CONTACT_FIRST_NAME);
 		fields.add(ProjectTypes.CONTACT_LAST_NAME);
+		log.debug("Grabbing Contacts from JIRA");
 		return getIssues(ProjectTypes.CRM,ProjectTypes.CONTACT);
 	}
 
 	public Set<Issue> getIssues(String project, String issueType) {
-		logger.debug("GETISSUES");
 		SearchRestClient searchClient = restClient.getSearchClient();
 		Set<Issue> issueSet = new HashSet<>();
 		int startIdx = 0;
@@ -227,11 +223,11 @@ public class AvalonJiraClient{
 			jqlQuery += " AND " + "issuetype = " + issueType;
 		else if(!issueType.isEmpty())
 			jqlQuery += "issuetype = " + issueType;
-		logger.debug("Prior to searchJQL");
+		log.debug("Building searchJQL: " + jqlQuery);
 		try {
 			Promise<SearchResult> results = searchClient.searchJql(jqlQuery,Integer.valueOf(maxResults),Integer.valueOf(startIdx),fields);
-			logger.debug("After to searchJQL");
 			int totalResults = results.claim().getTotal();
+			log.debug("Need to get " + totalResults + " items");
 			collectIssues(issueSet, results.claim().getIssues());
 			while(startIdx < totalResults) {
 				try {
@@ -239,12 +235,12 @@ public class AvalonJiraClient{
 					collectIssues(issueSet, results.claim().getIssues());
 					startIdx += maxResults;
 				} catch( Exception e) {
-					logger.debug("Exception Timeout");
+					log.debug("Exception Timeout");
 				}
 			}
-			logger.debug("After to searchJQL2");
+			log.debug("Finished building searchJQL");
 		} catch(Exception e) {
-			logger.debug("Nesting!!!!!");
+			log.error("Exception NESTING due to failure in building searchJQL: " + e);
 			return getIssues(project,issueType);
 		}
 		return issueSet;
@@ -254,7 +250,7 @@ public class AvalonJiraClient{
 		for(Issue issue:issues) {
 			issueSet.add(issue);
 		}
-		logger.debug("Search results: " + issueSet.size());
+		log.debug("Total Items grabbed from JIRA: " + issueSet.size());
 	}
 	public String createIssue(String projectKey, Long issueType, String issueSummary) {
 		IssueRestClient issueClient = restClient.getIssueClient();

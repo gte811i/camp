@@ -9,15 +9,22 @@ plugins {
 semver {
     properties = "config/version.properties" // read and save properties in "my.version"
 }
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 
 sourceCompatibility = 1.9
 targetCompatibility = 1.9
 version = '1.0'
-mainClassName = 'CrmImport.JiraImportCrm'
+mainClassName = 'avalon.jira.Tunnel'
 applicationDefaultJvmArgs = ['-Dlog4j.configurationFile=file:../resources/log4j2.properties']
 jar {
 	manifest {
-		attributes 'Implementation-Title': 'Gradle Quickstart', 'Implementation-Version': version
+		attributes(
+		"Implementation-Title": project.name,
+		"Implementation-Version": semver.semver,
+		"Main-Class": mainClassName,
+		"Class-Path": configurations.all.collect {it.getName()}.join(' ')
+		)
 	}
 }
 sourceSets {
@@ -25,14 +32,6 @@ sourceSets {
 		java {
 			srcDir 'src'
 		 }
-		resources {
-			srcDir 'resources'
-		}
-	}
-	test {
-		java {
-			srcDir 'src'
-		}
 		resources {
 			srcDir 'resources'
 		}
@@ -66,15 +65,15 @@ dependencies {
 	implementation('org.apache.commons:commons-lang3:3.7')
 	implementation('junit:junit:4.12')
 	implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
-	implementation group: 'com.atlassian.jira', name: 'jira-rest-java-client-core', version: '5.1.0'
+	implementation group: 'com.atlassian.jira', name: 'jira-rest-java-client-core', version: '5.2.4'
 	implementation group: 'io.atlassian.fugue', name: 'fugue', version: '4.7.2'
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.1'
  	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.1'
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.11.1'
 	implementation group: 'com.google.guava', name: 'guava', version: '20.0'
-    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
+    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
     
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
 shadowJar {
 	doFirst {
@@ -87,8 +86,41 @@ shadowJar {
 		setPath("META-INF/services")
 	}
 }
+
+task generateDeploymentConfigFile(type: Copy) {
+	from 'deploy/template.properties'
+	into 'config/'
+	doFirst {
+	println System.env.USERPROFILE
+//    user_home = System.getenv("USERPROFILE")
+//	println 'USER HOME:' + user_home
+	filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
+		'download_location' : System.env.USERPROFILE.replaceAll( "\\\\", '//' ) + '//Downloads//',
+		'xls_location' : 'Z://Jobs//Avalon//',
+		'user_name' : System.env.USERNAME
+	])
+	rename 'template.properties', 'insight.properties'
+	}
+}
+
+task installChrome(type: Copy) {
+    from 'rsc/chromedriver.exe'
+    into 'build/install/Tunnel-shadow/resources/'
+}
 task installResource(type: Copy) {
     from 'src/log4j2.properties'
     into 'build/install/Tunnel-shadow/resources/'
 }
-tasks.installResource.dependsOn tasks.installShadowDist
+task installConfig(type: Copy) {
+    from 'config/'
+    include "*.properties"
+    into 'build/install/Tunnel-shadow/bin/config/'
+}
+task installTunnel(type: Copy) {
+}
+
+//tasks.generateDeploymentConfigFile.dependsOn tasks.installShadowDist
+//tasks.installConfig.dependsOn tasks.generateDeploymentConfigFile
+tasks.installConfig.dependsOn tasks.installShadowDist
+tasks.installResource.dependsOn tasks.installConfig
+tasks.installTunnel.dependsOn tasks.installResource

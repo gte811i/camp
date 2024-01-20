@@ -117,9 +117,9 @@ dependencies {
     implementation "org.openjfx:javafx-graphics:11:win"
     implementation "org.openjfx:javafx-controls:11:win"
     implementation "org.openjfx:javafx-fxml:11:win"
-    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
+    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
     
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
 
 checkstyle {

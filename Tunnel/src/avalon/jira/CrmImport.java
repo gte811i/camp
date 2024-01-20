@@ -49,7 +49,6 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 public class CrmImport {
-	public static Logger logger=LoggerFactory.getLogger(CrmImport.class);
 
 	@Value("${avalon.download.location}")
 	private String AVALON_DIR;
@@ -112,10 +111,11 @@ public class CrmImport {
 				if(bidding) 
 					projectsHashMap.put(project.getProjectNumber(),project);
 				}catch(DateTimeParseException e) {
-					logger.debug(e.getMessage());
+					log.debug(e.getMessage());
 					continue;
 				}
 			}
+			log.debug("Projects to Bid put into JIRA are:" + projectsHashMap.keySet().toString());
 			File dir = new File(AVALON_DIR);
 			Pattern id = Pattern.compile(".*\\d{10}.*");
 			IOFileFilter regexfilter =   new RegexFileFilter(id);
@@ -127,8 +127,10 @@ public class CrmImport {
 				String fileDir = f.getParent();
 				String dirOnly = fileDir.substring(fileDir.lastIndexOf("\\")+1,fileDir.length());
 				// Only collect projects that are current
-				if(!projectsHashMap.containsKey(dirOnly))
+				if(!projectsHashMap.containsKey(dirOnly)) {
+					log.debug("Project " + dirOnly + " is not found in JobTracker List");
 					continue;
+				}
 				log.debug("File is:" +f.getAbsolutePath());
 				File fcsv = new File(f.getAbsolutePath().replace("xls", "csv"));
 				if(!fcsv.exists()) {
@@ -163,13 +165,16 @@ public class CrmImport {
 						e.printStackTrace();
 					}
 				} catch(NumberFormatException e) {
-					logger.debug("Could not convert: " + dirOnly);
+					log.debug("Could not convert: " + dirOnly);
 					continue;
 				}
 			}
 		} catch (Exception e ) {
 			e.printStackTrace();
 		}
+		log.debug("Buyer Activies List: " + projectBarHash.keySet().toString());
+		log.debug("Bidders List: " + projectBidderHash.keySet().toString());
+		log.debug("Projects List: " + projectsHashMap.keySet().toString());
 	}
 	private static String output(InputStream inputStream) throws IOException {
 		StringBuilder sb = new StringBuilder();

@@ -3,8 +3,6 @@
  */
 package avalon.jira;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,15 +11,12 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.atlassian.jira.rest.client.api.domain.IssueField;
-import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.CsvBindByPosition;
+import lombok.extern.log4j.Log4j2;
 
 
 /**
@@ -29,8 +24,10 @@ import com.opencsv.bean.CsvBindByPosition;
  *
  */
 @Component
+@Log4j2
 public class JiraImportCrm {
-	public static Logger logger=LoggerFactory.getLogger(JiraImportCrm.class);
+	@Value("${avalon.jiraUrl}")
+	private String jiraUrl;
 	private HashSet<ContactCsv> contactAddList = new HashSet<>();
 	private HashSet<CompanyCsv> companyAddList = new HashSet<>();
 	private HashSet<QuotesCsv> quoteAddList = new HashSet<>();
@@ -86,10 +83,10 @@ public class JiraImportCrm {
 			List<BarCsv> projectBar = projectBarHash.get(pn);
 			List<BiddersCsv> projectBidders = projectBiddersHash.get(pn);
 			try {
-				logger.debug("CollectingQuotes");
+				log.debug("CollectingQuotes");
 				Issue projectIssue = projects.stream().filter(filterProjects).findAny().orElse(null);
 				if(projectIssue == null) {
-					logger.debug("Cannot find Project: " + pn);
+					log.debug("Cannot find Project: " + pn);
 					continue;
 				}
 				projectKey = projectIssue.getKey();
@@ -101,7 +98,7 @@ public class JiraImportCrm {
 							contactKey = contacts.stream().filter(x->x.getSummary().equals(bar.getContact())).findFirst().get().getKey();
 							Issue quoteIssue = quotes.stream().filter(filterQuotes).findFirst().orElse(null);
 							if(quoteIssue != null) {
-								logger.debug("Quote is already in system: " + quoteIssue.getKey());
+								log.debug("Quote is already in system: " + quoteIssue.getKey());
 								continue;
 							}
 							QuotesCsv quote = new QuotesCsv();
@@ -121,7 +118,7 @@ public class JiraImportCrm {
 							contactKey = contacts.stream().filter(x->x.getSummary().equals(bidder.getContactName())).findFirst().get().getKey();
 							Issue quoteIssue =quotes.stream().filter(filterQuotes).findFirst().orElse(null);
 							if(quoteIssue != null) {
-								logger.debug("Quote is already in system: " + quoteIssue.getKey());
+								log.debug("Quote is already in system: " + quoteIssue.getKey());
 								continue;
 							}
 							QuotesCsv quote = new QuotesCsv();
@@ -133,32 +130,32 @@ public class JiraImportCrm {
 						}
 					}
 			}catch(NoSuchElementException e) {
-				logger.debug("Error in Finding Project, Company, Contact for Quote");
+				log.debug("Error in Finding Project, Company, Contact for Quote");
 			}
 		}
 	}
 	public void initJira() {
+		log.debug("Connecting to: " + jiraUrl);
 		jiraClient = new AvalonJiraClient(
 				"scarleton", 
 				"lamas123", 
-				"http://10.1.10.235:8080");
+				jiraUrl);
 	}
 	public void getJiraCompanies() {
 		companies = jiraClient.getCompanies();
-		logger.debug("Companies in Jira: " + companies.size());
+		log.debug("Companies in Jira: " + companies.size());
 	}
 	public void getJiraContacts() {
 		contacts = jiraClient.getContacts();
-		logger.debug("Contacts in Jira: " + contacts.size());
+		log.debug("Contacts in Jira: " + contacts.size());
 	}
 	public void getJiraProjects() {
-		logger.debug("GetJiraProjects");
 		projects = jiraClient.getProjects();
-		logger.debug("Projects in Jira: " + projects.size());
+		log.debug("Projects in Jira: " + projects.size());
 	}
 	public void getJiraQuotes() {
 		quotes = jiraClient.getQuotes();
-		logger.debug("Quotes in Jira: " + quotes.size());
+		log.debug("Quotes in Jira: " + quotes.size());
 	}
 	public void getJiraIssues() {
 		getJiraCompanies();
@@ -168,7 +165,6 @@ public class JiraImportCrm {
 
 	public void collectCrm() {
 		crm.collectData();
-		logger.debug("AfterCollectData");
 		barList = crm.getBarList();
 		biddersList = crm.getBiddersList();
 		projectBarHash = crm.getProjectBarHash();
@@ -183,59 +179,63 @@ public class JiraImportCrm {
 				projectNumberMap.put(String.valueOf(projectNumber.longValue()), project);
 		}
 		for(ProjectCsv project: projectsCurrentFilterMap.values()) {
-			if(!projectNumberMap.containsKey(project.getProjectNumber())) 
+			log.debug("Checking if " + project.getProjectNumber() + " already exists in JIRA");
+			if(!projectNumberMap.containsKey(project.getProjectNumber())) {
+				log.debug(project.getProjectNumber() + " will be added to JIRA");
 				projectAddList.add(project);
+			} else
+				log.debug(project.getProjectNumber() + " will NOT be added to JIRA-duplicate");
 		}
 	}
 	public boolean addQuotes() {
-		logger.debug("Number of Quotes to add is: "+ quoteAddList.size());
+		log.debug("Number of Quotes to add is: "+ quoteAddList.size());
 		if(quoteAddList.isEmpty())
 			return false;
 		for(QuotesCsv quote : quoteAddList) {
-			logger.debug("Quote to Add: " + quote.getQuoteProject() + ":" + quote.getQuoteContact() +":" + quote.getQuoteCompany());
+			log.debug("Quote to Add: " + quote.getQuoteProject() + ":" + quote.getQuoteContact() +":" + quote.getQuoteCompany());
 			String newKey = jiraClient.createQuoteIssue(quote);
-			logger.debug("New Quote created: " + newKey);
+			log.debug("New Quote created: " + newKey);
 
 		}
 		return true;
 	}
 	public boolean addProjects() {
-		logger.debug("Number of Projects to add is: "+ projectAddList.size());
+		log.debug("Number of Projects to add is: "+ projectAddList.size());
 		if(projectAddList.isEmpty())
 			return false;
 		for(ProjectCsv project : projectAddList) {
-			logger.debug("Project to Add: " + project.getProjectTitle());
+			log.debug("Project to Add: " + project.getProjectTitle());
 			String newKey = jiraClient.createProjectIssue(project);
-			logger.debug("New Project created: " + newKey);
+			log.debug("New Project created: " + newKey);
 		}
 		return true;
 	}
 	public boolean addContacts() {
-		logger.debug("Number of Contacts to add is: "+ contactAddList.size());
+		log.debug("Number of Contacts to add is: "+ contactAddList.size());
 		if(contactAddList.isEmpty())
 			return false;
 		for(ContactCsv contact:contactAddList) {
-			logger.debug("Contact to Add is: " + contact.getSummary());
+			log.debug("Contact to Add is: " + contact.getSummary());
 			String newKey = jiraClient.createContactIssue(contact);
-			logger.debug("New Contact created: " + newKey);
+			log.debug("New Contact created: " + newKey);
 		}
 		return true;
 	}
 	public boolean addCompanies() {
-		logger.debug("Number of Companies to add is: "+ companyAddList.size());
+		log.debug("Number of Companies to add is: "+ companyAddList.size());
 		if(companyAddList.isEmpty())
 			return false;
 		for(CompanyCsv company:companyAddList) {
-			logger.debug("Company to Add is: " + company.getSummary());
+			log.debug("Company to Add is: " + company.getSummary());
 			String newKey = jiraClient.createCompanyIssue(company);
-			logger.debug("New Company created: " + newKey);
+			log.debug("New Company created: " + newKey);
 		}
 		return true;
 	}
 
 	public void collectBidders() {
 		for(BiddersCsv bidder:biddersList) {
-			logger.debug("Checking out: " +bidder.getContactName());
+			log.debug("Checking if " +bidder.getContactName() + " is in JIRA");
 			if(bidder.getContactName()==null)
 				bidder.setContactName("");
 			if(bidder.getCompanyName()==null)
@@ -273,14 +273,17 @@ public class JiraImportCrm {
 					comp.setCompanyState(add[2+offset]);
 					comp.setCompanyZip(add[3+offset]);
 					comp.setContacts(bidder.getContactName());
+					log.debug("Adding " + comp + " to JIRA");
 					companyAddList.add(comp);
-				}
+				} 
+
 				if(contactIssue == null && !bidder.getContactName().isEmpty()) {
 					contact.setSummary(bidder.getContactName());
 					contact.setCompany(bidder.getCompanyName());
 					contact.setStreetAddress(bidder.getAddress());
 					contact.setEmail(bidder.getEmail());
 					contact.setPhoneBusiness(bidder.getPhone());
+					log.debug("Adding " + contact + " to JIRA");
 					contactAddList.add(contact);
 				}
 			}
@@ -288,7 +291,7 @@ public class JiraImportCrm {
 	}
 	public void collectBar() {
 		for(BarCsv bar:barList) {
-			logger.debug("Checking out: " +bar.getContact());
+			log.debug("Checking if " +bar.getContact() + " exists in JIRA");
 			if(bar.getContact()==null)
 				bar.setContact("");
 			if(bar.getCompanyName()==null )
@@ -314,13 +317,15 @@ public class JiraImportCrm {
 				contact.setCompany(bar.getCompanyName());
 				contact.setEmail(bar.getEmail());
 				contact.setPhoneBusiness(bar.getPhone());
+				log.debug("Adding " + contact + " to JIRA");
 				contactAddList.add(contact);
-			}
+			} 
 			if(companyIssue == null && !bar.getCompanyName().isEmpty()) {
 				comp.setSummary(bar.getCompanyName());
 				comp.setContacts(bar.getContact());
+				log.debug("Adding " + comp + " to JIRA");
 				companyAddList.add(comp);
-			}
+			} 
 		}
 	}
 }

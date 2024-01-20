@@ -41,6 +41,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+
+import lombok.extern.log4j.Log4j2;
 import processExcelCMD.CmdProject;
 import processExcelCMD.Project;
 import utils.CmdLogger;
@@ -50,6 +52,7 @@ import utils.CmdLogger;
  *
  */
 
+@Log4j2
 public class CmdExcel extends CmdLogger{
 	private static String trackerFolder = "C://Users//scarleton//Google Drive//Avalon//";
 	private static String downloadFolder = "C://Users//scarleton//Downloads//";
@@ -72,7 +75,7 @@ public class CmdExcel extends CmdLogger{
 			// Print out the list of projects found
 			for(Row r : sheetData)
 			{
-				logger.debug(cpy.rowToString(r));
+				log.debug(cpy.rowToString(r));
 				Project project = cpy.convertToProject(r);
 				newProjects.add(project);
 			}
@@ -84,7 +87,7 @@ public class CmdExcel extends CmdLogger{
 				CmdProject jobTracker = new CmdProject();
 				for (Cell cell :headerJT)
 					jobTracker.processCell(cell);
-				logger.debug(jobTracker.toStringHash());
+				log.debug(jobTracker.toStringHash());
 
 				HashMap<Integer,Integer> mapId = new HashMap<>();
 				for(Row r : sheetCombined)
@@ -96,14 +99,14 @@ public class CmdExcel extends CmdLogger{
 						switch(type)
 						{
 						case NUMERIC:
-							logger.debug("Numeric ID: " + Double.valueOf((b.getNumericCellValue())).intValue()+" Title: " + c.getStringCellValue());
+							log.debug("Numeric ID: " + Double.valueOf((b.getNumericCellValue())).intValue()+" Title: " + c.getStringCellValue());
 							mapId.put(Double.valueOf((b.getNumericCellValue())).intValue(),r.getRowNum());
 							break;
 						case ERROR:
 							break;
 						case STRING:
 						case FORMULA:
-							logger.debug("ID: " + b.getStringCellValue()+" Title: " + c.getStringCellValue());
+							log.debug("ID: " + b.getStringCellValue()+" Title: " + c.getStringCellValue());
 							mapId.put(Integer.getInteger(b.getStringCellValue()),r.getRowNum());
 							break;
 						default:
@@ -111,8 +114,8 @@ public class CmdExcel extends CmdLogger{
 						}
 					}catch(NullPointerException | IllegalStateException e)
 					{
-						logger.debug("Row Error:" + r.getRowNum());
-						logger.error(e.toString());
+						log.debug("Row Error:" + r.getRowNum());
+						log.error(e.toString());
 						continue;
 					}
 				}
@@ -133,16 +136,16 @@ public class CmdExcel extends CmdLogger{
 						switch(type)
 						{
 						case NUMERIC:
-							logger.debug("Update Project ID: " + Double.valueOf((p.id.getNumericCellValue())).intValue()
+							log.debug("Update Project ID: " + Double.valueOf((p.id.getNumericCellValue())).intValue()
 									+" Title: " + p.title.getStringCellValue() + " Date: " + date);
 							break;
 						case STRING:
 						case FORMULA:
-							logger.debug("Update Project ID: " + p.id.getStringCellValue()
+							log.debug("Update Project ID: " + p.id.getStringCellValue()
 							+" Title: " + p.title.getStringCellValue() + " Date: " + date);
 							break;
 						default:
-							logger.debug("Problem with Title: " + p.title.getStringCellValue() + " Date: " + date);
+							log.debug("Problem with Title: " + p.title.getStringCellValue() + " Date: " + date);
 							break;
 						}
 
@@ -150,7 +153,7 @@ public class CmdExcel extends CmdLogger{
 							Date tmp = formatter.parse(date);
 							sheetCombined.getRow(value.intValue()).getCell(jobTracker.getIdx(CmdProject.BID_DATE)).setCellValue(tmp);
 						}catch(ParseException e){
-							logger.debug("Unparsable Date:");
+							log.debug("Unparsable Date:");
 						}
 						Row rr = sheetCombined.getRow(value.intValue());
 						CellStyle styleCurrencyFormat = wb.createCellStyle();
@@ -186,7 +189,7 @@ public class CmdExcel extends CmdLogger{
 						}
 					}
 					else{
-						logger.debug("NEW ID Value: " + Double.valueOf(p.id.getNumericCellValue()).intValue()+ 
+						log.debug("NEW ID Value: " + Double.valueOf(p.id.getNumericCellValue()).intValue()+ 
 								" Title: " + p.title.getStringCellValue());
 						cellStyle.setDataFormat(
 								createHelper.createDataFormat().getFormat("m/d/yyyy"));
@@ -202,7 +205,7 @@ public class CmdExcel extends CmdLogger{
 							r.createCell(jobTracker.getIdx(CmdProject.BID_DATE)).setCellValue(tmp);
 							r.getCell(jobTracker.getIdx(CmdProject.BID_DATE)).setCellStyle(cellStyle); 	
 						} catch(ParseException e){
-							logger.debug("Title: " + p.title.getStringCellValue() + " "+ e.toString());
+							log.debug("Title: " + p.title.getStringCellValue() + " "+ e.toString());
 						}
 
 						Cell fl_cell =pr.getCell(jobTracker.getIdx(CmdProject.FOLDER_LINK));
@@ -268,7 +271,7 @@ public class CmdExcel extends CmdLogger{
 				wbNew.close();
 			}
 		} catch (EncryptedDocumentException | IOException e) {
-			logger.error(e.toString());
+			log.error(e.toString());
 		}
 	}
 
@@ -299,11 +302,11 @@ public class CmdExcel extends CmdLogger{
 				try{
 					if(r.getCell(avalonHeader.getIdx(CmdProject.ISSUE_KEY)).getCellType() == CellType.BLANK)
 					{
-						logger.debug("Need Import:" + r.getCell(avalonHeader.getIdx(CmdProject.TITLE)));
+						log.debug("Need Import:" + r.getCell(avalonHeader.getIdx(CmdProject.TITLE)));
 						copyRow.add(r);
 					}
 				}catch( NullPointerException e){
-					logger.debug(e.toString());
+					log.debug(e.toString());
 				}
 			};
 			Consumer<Row> cpy = (Row r) -> {
@@ -311,7 +314,7 @@ public class CmdExcel extends CmdLogger{
 			cmd.forEach(getDetails);
 			copyRow.forEach(cpy);
 		} catch (IOException |EncryptedDocumentException e) {
-			logger.error(e.toString());
+			log.error(e.toString());
 		}
 
 	}
@@ -339,18 +342,18 @@ public class CmdExcel extends CmdLogger{
 						if(bid.after(now) && bid.before(future.getTime()))
 						{
 							Hyperlink link = r.getCell(avalonHeader.getIdx(CmdProject.TITLE)).getHyperlink();
-							logger.debug("Get Details from:" + r.getCell(avalonHeader.getIdx(CmdProject.TITLE)));
-							logger.debug("Address is:" + link.getAddress());
+							log.debug("Get Details from:" + r.getCell(avalonHeader.getIdx(CmdProject.TITLE)));
+							log.debug("Address is:" + link.getAddress());
 							links.add(link.getAddress());
 						}
 					}
 				}catch( NullPointerException e){
-					logger.debug(e.toString());
+					log.debug(e.toString());
 				}
 			};
 			cmd.forEach(getDetails);
 		} catch (IOException |EncryptedDocumentException e) {
-			logger.error(e.toString());
+			log.error(e.toString());
 		}
 		return links;
 	}
@@ -371,7 +374,7 @@ public class CmdExcel extends CmdLogger{
 			List<Project> transferProjects = new ArrayList<>();
 			for(Row r : cmd)
 			{
-				logger.debug("Project ID New:" + r.getCell(cpy.getIdx(CmdProject.TITLE)));
+				log.debug("Project ID New:" + r.getCell(cpy.getIdx(CmdProject.TITLE)));
 				if(r.getCell(cpy.getIdx(CmdProject.BID_DATE)).getDateCellValue().after(new Date())){
 					Project project = cpy.convertToProject(r);
 					transferProjects.add(project);
@@ -379,7 +382,7 @@ public class CmdExcel extends CmdLogger{
 			}
 
 		} catch (EncryptedDocumentException | IOException e) {
-			logger.error(e.toString());
+			log.error(e.toString());
 		}
 	}
 
@@ -388,7 +391,7 @@ public class CmdExcel extends CmdLogger{
 		File curDir = new File(trackerFolder);
 		File[] zips = getZipFiles(curDir);
 		if(zips == null) {
-			logger.debug("No files to Unzip");
+			log.debug("No files to Unzip");
 			return;
 		}
 			
@@ -411,37 +414,37 @@ public class CmdExcel extends CmdLogger{
 						{
 							String newName = fi.toFile().getParentFile().getParentFile().toPath() + "\\" + fi.getFileName();
 							newFile = new File(newName);
-							logger.debug("PPath:"+newFile.getAbsolutePath());
-							logger.debug("PName1:"+fi);
-							logger.debug("PName:"+fi.getFileName());
+							log.debug("PPath:"+newFile.getAbsolutePath());
+							log.debug("PName1:"+fi);
+							log.debug("PName:"+fi.getFileName());
 						}
 						else
 						{
 							if(fi.getFileName().toString().length()>=19) {
 								String newName = fi.toFile().getParentFile().getParentFile().getParentFile().toPath() + "\\"+fi.getFileName().toString().substring(19);
 								newFile = new File(newName);
-								logger.debug("Test: " + fi.getFileName().toString().substring(19));
-								logger.debug("Path:"+newFile.getAbsolutePath());
-								logger.debug("Name1:"+fi);
-								logger.debug("Name:"+fi.getFileName());
+								log.debug("Test: " + fi.getFileName().toString().substring(19));
+								log.debug("Path:"+newFile.getAbsolutePath());
+								log.debug("Name1:"+fi);
+								log.debug("Name:"+fi.getFileName());
 							}
 						}
 						try {
 							Files.move(fi, newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 						} catch (IOException e) {
-							logger.debug(e.toString());
+							log.debug(e.toString());
 						}
 					};
 					Consumer<Path> delete = (Path fi) -> 
 					{
 						if(fi.getParent().endsWith("Avalon"))
 						{
-							logger.debug("Do not delete: " + fi);
+							log.debug("Do not delete: " + fi);
 						} else
 							try {
 								FileUtils.deleteDirectory(fi.toFile());
 							} catch (IOException e) {
-								logger.debug(e.toString());
+								log.debug(e.toString());
 							}
 					};
 					Files.walk(Paths.get(unzipFolder))
@@ -452,7 +455,7 @@ public class CmdExcel extends CmdLogger{
 					.forEach(delete);
 					FileUtils.deleteQuietly(f);
 				} catch (IOException e) {
-					logger.debug(e.toString());
+					log.debug(e.toString());
 				}
 			}
 		}
@@ -467,12 +470,12 @@ public class CmdExcel extends CmdLogger{
 			if (matcher.find()){
 				unzipFolder = matcher.group();
 				File uFolder = new File(fi.getParent()+"\\"+unzipFolder + "\\" + fi.getFileName());
-				logger.debug("Folder: " + uFolder);
-				logger.debug("File: " + fi);
+				log.debug("Folder: " + uFolder);
+				log.debug("File: " + fi);
 				try {
 					Files.move(fi, uFolder.toPath(), StandardCopyOption.REPLACE_EXISTING);
 				} catch (IOException e) {
-					logger.error(e.toString());
+					log.error(e.toString());
 				}
 			}
 		};
@@ -480,7 +483,7 @@ public class CmdExcel extends CmdLogger{
 		String.valueOf(path).endsWith(".pdf"))) {
 			stream.forEach(renameSpec);
 		} catch (IOException e) {
-			logger.debug(e.toString());
+			log.debug(e.toString());
 		}
 	}
 	private File[] getZipFiles(File curDir){
@@ -546,7 +549,7 @@ public class CmdExcel extends CmdLogger{
 			if(f.isDirectory())
 				getAllFiles(f);
 			if(f.isFile()){
-				logger.debug(f.getName());
+				log.debug(f.getName());
 			}
 		}
 	}
@@ -561,19 +564,19 @@ public class CmdExcel extends CmdLogger{
 		FileFilter ageFilter = new AgeFileFilter(cutoff,false);
 		File[] files = dir.listFiles(ageFilter);
 		if(files == null) {
-			logger.debug("No Files to Move From: " + downloadFolder +" To: " + trackerFolder);
+			log.debug("No Files to Move From: " + downloadFolder +" To: " + trackerFolder);
 			return;
 		}
 		for(File f: files)
 		{
-			logger.debug("File to move:"+f.toString());
+			log.debug("File to move:"+f.toString());
 			File moveTo = new File(trackerFolder+f.getName());
 			if(moveTo.exists())
 				moveTo.delete();
 			try {
 				FileUtils.moveFile(f, moveTo);
 			} catch(IOException e){
-				logger.error("Error copy data"+e);
+				log.error("Error copy data"+e);
 			}
 		}
 	}
@@ -586,12 +589,12 @@ public class CmdExcel extends CmdLogger{
 		FileFilter fileFilter = new WildcardFileFilter("*.xls");
 		File[] files = dir.listFiles(fileFilter);
 		if(files == null) {
-			logger.debug("No Files to Copy Data From/To in: " + trackerFolder);
+			log.debug("No Files to Copy Data From/To in: " + trackerFolder);
 			return;
 		}
 		for(File f: files)
 		{
-			logger.debug("File to move:"+f.toString());
+			log.debug("File to move:"+f.toString());
 			Pattern id = Pattern.compile("\\d{10}");
 			Matcher m = id.matcher(f.toString());
 			if(m.find()){
@@ -602,7 +605,7 @@ public class CmdExcel extends CmdLogger{
 				try {
 					FileUtils.moveFile(f, moveTo);
 				} catch(IOException e){
-					logger.error("Error copy data"+e);
+					log.error("Error copy data"+e);
 				}
 			}
 		}
